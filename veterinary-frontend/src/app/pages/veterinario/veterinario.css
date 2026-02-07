@@ -1,0 +1,89 @@
+.title {
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: #495057;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.page-container {
+  min-height: calc(100vh - 80px);
+  padding: 24px 16px 32px;
+  background: linear-gradient(180deg, #f5f7fb 0%, #edf1f7 100%);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #dee2e6;
+  padding: 12px 0 16px;
+  margin-bottom: 12px;
+}
+
+.btn-icon {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filters-card {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  margin-bottom: 1.5rem;
+}
+
+.table-custom {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.table-custom thead {
+  background: linear-gradient(90deg, #0d6efd, #0b5ed7);
+  color: #ffffff;
+}
+
+.table-custom thead th {
+  border-bottom-width: 0;
+  font-weight: 500;
+}
+
+.table-custom tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.table-custom tbody tr:hover {
+  background-color: #e9f2ff;
+}
+
+.actions-cell button {
+  margin: 0 3px;
+}
+
+.badge.bg-success {
+  background-color: #198754 !important;
+}
+
+.badge.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+@media (max-width: 768px) {
+  .filters-card {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
