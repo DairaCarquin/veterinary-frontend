@@ -4,4 +4,6 @@ export interface Veterinary {
   especialidad: string;
   telefono: string;
   estado: string;
+  tipo?: string; // Core, Noncore, Overdue, etc.
+  fecha?: string;
 }

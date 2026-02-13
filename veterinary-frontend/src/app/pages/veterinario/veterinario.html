@@ -1,104 +1,192 @@
-<div class="page-container">
-  <div class="container-fluid">
-
-    <div class="page-header">
-      <div>
-        <h2 class="title mb-1">Veterinarios</h2>
-        <p class="text-muted mb-0">Gestión de profesionales y sus especialidades</p>
-      </div>
-      <div>
-        <button class="btn btn-primary btn-icon shadow-sm"
-                title="Nuevo veterinario">
-          <i class="bi bi-plus-lg"></i>
-        </button>
-      </div>
+<div class="dashboard-container">
+  <!-- Header estilo GuardianVets / PetCare -->
+  <div class="dashboard-header">
+    <div>
+      <h1 class="dashboard-title"># PetCare.</h1>
+      <p class="dashboard-subtitle">Bienvenido, Admin</p>
     </div>
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          placeholder="Buscar veterinario"
+          [(ngModel)]="filterNombre"
+          (ngModelChange)="aplicarFiltros()"
+        />
+      </div>
+  </div>
 
-    <!-- FILTROS -->
-    <div class="filters-card">
-      <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
+  <div class="dashboard-grid">
+    <!-- Sidebar - MENU -->
+    <aside class="sidebar">
+      <div class="menu-section">
+        <h3>MENU</h3>
+        <ul>
+          <li><i class="bi bi-grid"></i> Dashboard</li>
+          <li><i class="bi bi-file-person"></i> Pet profile</li>
+        </ul>
+      </div>
 
-        <form class="row g-3 align-items-end flex-grow-1">
+      <div class="menu-section">
+        <h3>ANALYTICS</h3>
+        <ul>
+          <li><i class="bi bi-heart-pulse"></i> Health monitoring</li>
+          <li><i class="bi bi-calendar-check"></i> Vaccination schedule</li>
+        </ul>
+      </div>
 
-          <div class="col-md-4 col-lg-3">
-            <label class="form-label text-muted" for="nombres">Nombres</label>
-            <input id="nombres"
-                   type="text"
-                   class="form-control"
-                   placeholder="Buscar por nombre"
-                   [(ngModel)]="filterNombre"
-                   name="nombres">
+      <div class="menu-section">
+        <h3>SCHEDULE</h3>
+        <ul>
+          <li><i class="bi bi-clock"></i> Appointments <span class="badge-count">2</span></li>
+        </ul>
+      </div>
+
+      <div class="menu-section">
+        <h3>HELP</h3>
+        <ul>
+          <li><i class="bi bi-gear"></i> Settings</li>
+          <li><i class="bi bi-file-text"></i> Documentation</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Activity Tabs -->
+      <div class="activity-tabs">
+        <button class="tab">Daily</button>
+        <button class="tab">Weekly</button>
+        <button class="tab active">WEEKLY</button>
+      </div>
+
+      <!-- Health Monitoring Cards -->
+      <div class="health-monitoring">
+        <h2>HEALTH MONITORING</h2>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-label">Stress level</span>
+            <span class="metric-value">--</span>
           </div>
-
-          <div class="col-md-4 col-lg-3">
-            <label class="form-label text-muted" for="especialidad">Especialidad</label>
-            <input id="especialidad"
-                   type="text"
-                   class="form-control"
-                   placeholder="Especialidad"
-                   [(ngModel)]="filterEspecialidad"
-                   name="especialidad">
+          <div class="metric-card">
+            <span class="metric-label">Pulse</span>
+            <span class="metric-value">--</span>
           </div>
+          <div class="metric-card">
+            <span class="metric-label">Temperature</span>
+            <span class="metric-value">--</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Calories burned</span>
+            <span class="metric-value">--</span>
+          </div>
+        </div>
+      </div>
 
-        </form>
+      <!-- Métricas estilo GuardianVets -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-label">Consultas hoy</span>
+          <span class="stat-value">{{ consultasHoy }}%</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Vacaciones activas</span>
+          <span class="stat-value">{{ vacacionesActivas }}%</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Vacaciones al día</span>
+          <span class="stat-value">{{ vacacionesAlDia }}%</span>
+        </div>
+      </div>
 
-        <div class="text-end">
-          <button class="btn btn-outline-secondary btn-sm"
-                  (click)="limpiarFiltros()">
-            <i class="bi bi-x-circle me-1"></i>
+      <!-- Gráfico simulado -->
+      <div class="chart-container">
+        <h2>Graph</h2>
+        <div class="chart-bars">
+          <div *ngFor="let mes of meses; let i = index" class="chart-item">
+            <span class="bar-label">{{ mes }}</span>
+            <div class="bar" [style.height.px]="valores[i] * 5"></div>
+          </div>
+        </div>
+        <div class="chart-axis">
+          <span>0</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10</span>
+        </div>
+      </div>
+
+      <!-- VACCINATION SCHEDULE (adaptado a veterinarios) -->
+      <div class="vaccination-section">
+        <h2>VACCINATION SCHEDULE</h2>
+
+        <!-- Filtros -->
+        <div class="filters-row">
+          <div class="filter-field">
+            <label>Nombre</label>
+            <input
+              type="text"
+              placeholder="Ej. James"
+              [(ngModel)]="filterNombre"
+              (ngModelChange)="aplicarFiltros()"
+            />
+          </div>
+          <div class="filter-field">
+            <label>Especialidad</label>
+            <input
+              type="text"
+              placeholder="Ej. Cirugía"
+              [(ngModel)]="filterEspecialidad"
+              (ngModelChange)="aplicarFiltros()"
+            />
+          </div>
+          <button class="clear-button" type="button" (click)="limpiarFiltros()">
             Limpiar filtros
           </button>
         </div>
+
+        <div class="table-responsive">
+          <table class="vets-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Veterinarian</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let v of filteredVeterinarios | slice:(page - 1) * size:(page - 1) * size + size">
+                <td>{{ v.nombre }}</td>
+                <td>
+                  <span [ngClass]="getBadgeClass(v.tipo || '')" class="badge-type">
+                    {{ v.tipo || 'Core' }}
+                  </span>
+                </td>
+                <td>{{ v.fecha || '01 Dec 2023' }}</td>
+                <td class="veterinario-cell">
+                  <span class="veterinario-link">{{ v.nombre }}</span>
+                  <span *ngIf="v.tipo === 'Overdue'" class="find-vet">Find veterinarian</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación sencilla -->
+        <div class="pagination-row" *ngIf="filteredVeterinarios.length > size">
+          <button type="button" (click)="cambiarPagina(-1)" [disabled]="page === 1">
+            Anterior
+          </button>
+          <span>
+            Página {{ page }} de {{ totalPaginas }}
+          </span>
+          <button
+            type="button"
+            (click)="cambiarPagina(1)"
+            [disabled]="page >= totalPaginas"
+          >
+            Siguiente
+          </button>
+        </div>
       </div>
-    </div>
-
-    <!-- TABLA -->
-    <div class="table-responsive">
-      <table class="table table-custom align-middle mb-0">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Especialidad</th>
-          <th>Estado</th>
-          <th class="text-center">Acciones</th>
-        </tr>
-      </thead>
-
-      <tbody>
-
-        <tr *ngIf="veterinarios.length === 0">
-          <td colspan="4" class="text-center text-muted py-4">
-            No se encontraron resultados
-          </td>
-        </tr>
-
-        <tr *ngFor="let v of veterinarios">
-          <td>{{ v.nombre }}</td>
-          <td>{{ v.especialidad }}</td>
-          <td>
-            <span class="badge"
-                  [ngClass]="v.estado === 'Activo' ? 'bg-success' : 'bg-secondary'">
-              {{ v.estado }}
-            </span>
-          </td>
-          <td class="text-center actions-cell">
-
-            <button class="btn btn-icon btn-outline-warning"
-                    title="Editar">
-              <i class="bi bi-pencil"></i>
-            </button>
-
-            <button class="btn btn-icon btn-outline-danger"
-                    title="Eliminar">
-              <i class="bi bi-trash"></i>
-            </button>
-
-          </td>
-        </tr>
-
-      </tbody>
-      </table>
-    </div>
-
+    </main>
   </div>
 </div>
