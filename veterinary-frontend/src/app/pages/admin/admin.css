@@ -1,0 +1,385 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background: white;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 3rem;
+}
+
+.brand-logo {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.brand-text {
+  font-weight: 700;
+  font-size: 1.4rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Navegación */
+.nav-menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.2rem;
+  border-radius: 12px;
+  color: #4a5568;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: #f7f9fc;
+  color: #667eea;
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.nav-section {
+  margin-left: 0.5rem;
+}
+
+.nav-subitem {
+  padding: 0.6rem 1.2rem 0.6rem 3.2rem;
+  color: #718096;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.nav-subitem:hover {
+  background: #f7f9fc;
+  color: #667eea;
+}
+
+.logout {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.2rem;
+  border-radius: 12px;
+  color: #e53e3e;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 2rem;
+  border-top: 1px solid #edf2f7;
+  padding-top: 1.5rem;
+}
+
+.logout:hover {
+  background: #fff5f5;
+}
+
+
+.main-content {
+  flex: 1;
+  padding: 2rem 3rem;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.notification {
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.user-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.activity-section {
+  background: white;
+  border-radius: 24px;
+  padding: 1.8rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.activity-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tab {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  background: #f7f9fc;
+  border-radius: 999px;
+  font-weight: 500;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: #fafcff;
+  border-radius: 16px;
+  padding: 1.2rem;
+  border: 1px solid #e2e8f0;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.stat-title {
+  color: #718096;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.stat-icon {
+  font-size: 1.1rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.75rem;
+}
+
+.stat-progress {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.chart-section {
+  background: white;
+  border-radius: 24px;
+  padding: 1.8rem;
+  margin-bottom: 2rem;
+}
+
+.chart-section h2 {
+  color: #2d3748;
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-container {
+  height: 300px;
+  width: 100%;
+}
+
+.vaccination-section {
+  background: white;
+  border-radius: 24px;
+  padding: 1.8rem;
+}
+
+.vaccination-section h2 {
+  color: #2d3748;
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.vaccination-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vaccination-table th {
+  text-align: left;
+  padding: 1rem 1rem;
+  background: #f8fafd;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vaccination-table td {
+  padding: 1rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #2d3748;
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.overdue {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+.badge.noncore {
+  background: #feebc8;
+  color: #c05621;
+}
+
+.badge.core {
+  background: #c6f6d5;
+  color: #276749;
+}
+
+.vet-link {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.vet-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 100px;
+    padding: 1.5rem 0.5rem;
+  }
+
+  .brand-text,
+  .nav-item span:last-child,
+  .nav-subitem,
+  .logout span:last-child {
+    display: none;
+  }
+
+  .nav-item,
+  .logout {
+    justify-content: center;
+    padding: 0.85rem;
+  }
+
+  .nav-subitem {
+    padding: 0.6rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    padding: 1rem;
+  }
+
+  .brand {
+    margin-bottom: 0;
+  }
+
+  .nav-menu {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .main-content {
+    padding: 1.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,63 @@
+<div class="login-page">
+	<div class="login-left">
+		<header class="brand">
+			<div class="brand-logo">GV</div>
+			<div class="brand-text">GuardianVets</div>
+		</header>
+
+		<h1 class="login-title">
+			Iniciar sesión para
+			<br />
+			práctica privada
+			<br />
+			<span>individual</span>
+		</h1>
+
+		<form class="login-form" (ngSubmit)="login()" #loginForm="ngForm" novalidate>
+			<div class="form-group">
+				<label for="username">Nombre de usuario</label>
+				<input
+					type="text"
+					id="username"
+					name="username"
+					placeholder="jdoe@hospital.com"
+					[(ngModel)]="username"
+					required
+				/>
+			</div>
+
+			<div class="form-group">
+				<label for="password">Contraseña</label>
+				<input
+					type="password"
+					id="password"
+					name="password"
+					placeholder="••••••••"
+					[(ngModel)]="password"
+					required
+				/>
+			</div>
+
+			<div *ngIf="error" class="error-message">
+				{{ error }}
+			</div>
+
+			<div class="form-actions">
+				<button type="submit" [disabled]="loginForm.invalid">
+					Acceso
+				</button>
+				<a href="#" class="forgot-link">¿Has olvidado tu contraseña?</a>
+			</div>
+		</form>
+
+		<div class="paws">
+			<span>🐾</span>
+			<span>🐾</span>
+			<span>🐾</span>
+			<span>🐾</span>
+		</div>
+	</div>
+
+	<div class="login-right">
+	</div>
+</div>
