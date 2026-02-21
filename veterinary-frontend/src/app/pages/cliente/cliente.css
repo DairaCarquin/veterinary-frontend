@@ -1,0 +1,83 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+header .logo {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+header nav ul {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+header nav a {
+  text-decoration: none;
+  color: #374151;
+  font-weight: 500;
+}
+
+.hero {
+  padding: 3rem 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+}
+
+.hero h1 {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero p {
+  margin-bottom: 1.5rem;
+}
+
+.hero button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  border: none;
+  background: #fbbf24;
+  color: #111827;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.servicios {
+  padding: 2.5rem 2rem;
+}
+
+.servicios h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.servicios .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.servicios .card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+}
+
+footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  border-top: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-size: 0.875rem;
+}

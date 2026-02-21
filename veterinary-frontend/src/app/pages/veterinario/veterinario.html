@@ -1,111 +1,104 @@
 <div class="dashboard-container">
-  <!-- Header estilo GuardianVets / PetCare -->
+  <!-- Header profesional para veterinario -->
   <div class="dashboard-header">
     <div>
-      <h1 class="dashboard-title"># PetCare.</h1>
-      <p class="dashboard-subtitle">Bienvenido, Admin</p>
+      <h1 class="dashboard-title"># PetCare · Veterinario</h1>
+      <p class="dashboard-subtitle">
+        Bienvenido,
+        <strong *ngIf="veterinarioActual; else loadingName">
+          {{ veterinarioActual.name }} {{ veterinarioActual.lastname }}
+        </strong>
+        <ng-template #loadingName>cargando perfil...</ng-template>
+      </p>
     </div>
-      <div class="search-box">
-        <i class="bi bi-search"></i>
+    <div class="search-box">
+      <label class="switch" style="display:flex; align-items:center; gap:8px; margin-left:0;">
+        <span style="font-size:12px; color:#e5e7eb;">Disponibilidad</span>
         <input
-          type="text"
-          placeholder="Buscar veterinario"
-          [(ngModel)]="filterNombre"
-          (ngModelChange)="aplicarFiltros()"
+          id="disponibilidadToggle"
+          type="checkbox"
+          [checked]="veterinarioActual?.available"
+          (change)="toggleDisponibilidad()"
         />
-      </div>
+        <span class="slider round"></span>
+      </label>
+    </div>
   </div>
 
   <div class="dashboard-grid">
-    <!-- Sidebar - MENU -->
+    <!-- Sidebar estática -->
     <aside class="sidebar">
       <div class="menu-section">
-        <h3>MENU</h3>
+        <h3>MI CUENTA</h3>
         <ul>
-          <li><i class="bi bi-grid"></i> Dashboard</li>
-          <li><i class="bi bi-file-person"></i> Pet profile</li>
+          <li>
+            <button type="button" class="menu-link" (click)="irAMiPerfil()">
+              <i class="bi bi-person-badge"></i>
+              Mi perfil
+            </button>
+          </li>
+          <li>
+            <button type="button" class="menu-link" (click)="irAMisCitas()">
+              <i class="bi bi-calendar-check"></i>
+              Mis citas
+            </button>
+          </li>
         </ul>
       </div>
 
       <div class="menu-section">
-        <h3>ANALYTICS</h3>
+        <h3>ESTADO</h3>
         <ul>
-          <li><i class="bi bi-heart-pulse"></i> Health monitoring</li>
-          <li><i class="bi bi-calendar-check"></i> Vaccination schedule</li>
+          <li>
+            <button
+              type="button"
+              class="menu-link"
+              (click)="toggleDisponibilidad()"
+              [disabled]="!veterinarioActual"
+            >
+              <i class="bi bi-activity"></i>
+              <span>
+                {{ veterinarioActual?.available ? 'Disponible para citas' : 'No disponible' }}
+              </span>
+            </button>
+          </li>
         </ul>
       </div>
 
       <div class="menu-section">
-        <h3>SCHEDULE</h3>
+        <h3>AYUDA</h3>
         <ul>
-          <li><i class="bi bi-clock"></i> Appointments <span class="badge-count">2</span></li>
-        </ul>
-      </div>
-
-      <div class="menu-section">
-        <h3>HELP</h3>
-        <ul>
-          <li><i class="bi bi-gear"></i> Settings</li>
-          <li><i class="bi bi-file-text"></i> Documentation</li>
+          <li><i class="bi bi-gear"></i> Configuración</li>
+          <li><i class="bi bi-file-text"></i> Documentación</li>
         </ul>
       </div>
     </aside>
 
     <!-- Main Content -->
     <main class="main-content">
-      <!-- Activity Tabs -->
-      <div class="activity-tabs">
-        <button class="tab">Daily</button>
-        <button class="tab">Weekly</button>
-        <button class="tab active">WEEKLY</button>
-      </div>
-
-      <!-- Health Monitoring Cards -->
-      <div class="health-monitoring">
-        <h2>HEALTH MONITORING</h2>
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <span class="metric-label">Stress level</span>
-            <span class="metric-value">--</span>
-          </div>
-          <div class="metric-card">
-            <span class="metric-label">Pulse</span>
-            <span class="metric-value">--</span>
-          </div>
-          <div class="metric-card">
-            <span class="metric-label">Temperature</span>
-            <span class="metric-value">--</span>
-          </div>
-          <div class="metric-card">
-            <span class="metric-label">Calories burned</span>
-            <span class="metric-value">--</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Métricas estilo GuardianVets -->
+      <!-- Métricas rápidas -->
       <div class="stats-row">
         <div class="stat-card">
-          <span class="stat-label">Consultas hoy</span>
-          <span class="stat-value">{{ consultasHoy }}%</span>
+          <span class="stat-label">Consultas de hoy</span>
+          <span class="stat-value">{{ consultasHoy }}</span>
         </div>
         <div class="stat-card">
-          <span class="stat-label">Vacaciones activas</span>
-          <span class="stat-value">{{ vacacionesActivas }}%</span>
+          <span class="stat-label">Disponibilidad</span>
+          <span class="stat-value">{{ porcentajeDisponibilidad }}%</span>
         </div>
         <div class="stat-card">
-          <span class="stat-label">Vacaciones al día</span>
-          <span class="stat-value">{{ vacacionesAlDia }}%</span>
+          <span class="stat-label">Pacientes este mes</span>
+          <span class="stat-value">{{ totalPacientesMes }}</span>
         </div>
       </div>
 
-      <!-- Gráfico simulado -->
+      <!-- Gráfico simulado de actividad -->
       <div class="chart-container">
-        <h2>Graph</h2>
+        <h2>Actividad mensual (mock)</h2>
         <div class="chart-bars">
           <div *ngFor="let mes of meses; let i = index" class="chart-item">
             <span class="bar-label">{{ mes }}</span>
-            <div class="bar" [style.height.px]="valores[i] * 5"></div>
+            <div class="bar" [style.height.px]="valores[i] * 6"></div>
           </div>
         </div>
         <div class="chart-axis">
@@ -113,79 +106,176 @@
         </div>
       </div>
 
-      <!-- VACCINATION SCHEDULE (adaptado a veterinarios) -->
-      <div class="vaccination-section">
-        <h2>VACCINATION SCHEDULE</h2>
+      <!-- Sección de perfil -->
+      <div class="vaccination-section" #perfilSection>
+        <h2>Mi perfil</h2>
 
-        <!-- Filtros -->
+        <!-- Mensajes -->
+        <p *ngIf="mensajeExito" style="color:#e5e7eb; font-size:13px; margin-bottom:8px;">
+          {{ mensajeExito }}
+        </p>
+        <p *ngIf="mensajeError" style="color:#f87171; font-size:13px; margin-bottom:8px;">
+          {{ mensajeError }}
+        </p>
+
+        <div class="filters-row" style="align-items:stretch;">
+          <!-- Datos de solo lectura -->
+          <div class="metric-card" style="flex:1; min-width:0;">
+            <span class="metric-label">Datos actuales</span>
+            <div *ngIf="veterinarioActual; else noPerfil">
+              <p style="color:#e5e7eb; margin:4px 0; font-size:14px;">
+                <strong>Nombre:</strong>
+                {{ veterinarioActual.name }} {{ veterinarioActual.lastname }}
+              </p>
+              <p style="color:#e5e7eb; margin:4px 0; font-size:14px;">
+                <strong>Email:</strong>
+                {{ veterinarioActual.email }}
+              </p>
+              <p style="color:#e5e7eb; margin:4px 0; font-size:14px;">
+                <strong>Teléfono:</strong>
+                {{ veterinarioActual.phone || 'No registrado' }}
+              </p>
+              <p style="color:#e5e7eb; margin:4px 0; font-size:14px;">
+                <strong>Especialidad:</strong>
+                {{ veterinarioActual.specialty }}
+              </p>
+              <p style="color:#e5e7eb; margin:4px 0; font-size:14px;">
+                <strong>Estado:</strong>
+                <span class="badge-type" [ngClass]="badgeDisponibilidadClass">
+                  {{ veterinarioActual.available ? 'Disponible' : 'No disponible' }}
+                </span>
+              </p>
+            </div>
+            <ng-template #noPerfil>
+              <p style="color:#9ca3af; font-size:14px;">No se encontró el perfil en los mocks.</p>
+            </ng-template>
+          </div>
+
+          <!-- Formulario editable -->
+          <form class="filter-field" style="flex:1; min-width:0; gap:8px;" (ngSubmit)="guardarCambios()">
+            <label for="nombreInput">Nombre</label>
+            <input
+              id="nombreInput"
+              type="text"
+              required
+              minlength="2"
+              [(ngModel)]="formModel.name"
+              name="name"
+              placeholder="Nombre"
+            />
+
+            <label for="apellidoInput">Apellido</label>
+            <input
+              id="apellidoInput"
+              type="text"
+              required
+              minlength="2"
+              [(ngModel)]="formModel.lastname"
+              name="lastname"
+              placeholder="Apellido"
+            />
+
+            <label for="telefonoInput">Teléfono</label>
+            <input
+              id="telefonoInput"
+              type="tel"
+              pattern="^[0-9]{9}$"
+              [(ngModel)]="formModel.phone"
+              name="phone"
+              placeholder="987654321"
+            />
+
+            <label for="especialidadInput">Especialidad</label>
+            <input
+              id="especialidadInput"
+              type="text"
+              required
+              minlength="3"
+              [(ngModel)]="formModel.specialty"
+              name="specialty"
+              placeholder="Cirugía, Dermatología, ..."
+            />
+
+            <button
+              class="clear-button"
+              type="submit"
+              style="margin-top:8px; background:#15803d; color:#f9fafb; border-color:#22c55e;"
+            >
+              Guardar cambios
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Sección de citas -->
+      <div class="vaccination-section" #citasSection style="margin-top:24px;">
+        <h2>Mis citas (mock)</h2>
+
         <div class="filters-row">
           <div class="filter-field">
-            <label>Nombre</label>
-            <input
-              type="text"
-              placeholder="Ej. James"
-              [(ngModel)]="filterNombre"
-              (ngModelChange)="aplicarFiltros()"
-            />
+            <label for="filtroEstado">Estado</label>
+            <select
+              id="filtroEstado"
+              [(ngModel)]="filtroEstado"
+              name="filtroEstado"
+            >
+              <option value="TODAS">Todas</option>
+              <option value="PENDIENTE">Pendientes</option>
+              <option value="CONFIRMADA">Confirmadas</option>
+              <option value="CANCELADA">Canceladas</option>
+            </select>
           </div>
-          <div class="filter-field">
-            <label>Especialidad</label>
-            <input
-              type="text"
-              placeholder="Ej. Cirugía"
-              [(ngModel)]="filterEspecialidad"
-              (ngModelChange)="aplicarFiltros()"
-            />
-          </div>
-          <button class="clear-button" type="button" (click)="limpiarFiltros()">
-            Limpiar filtros
-          </button>
         </div>
 
-        <div class="table-responsive">
+        <div class="table-responsive" *ngIf="citas && citas.length; else noCitas">
           <table class="vets-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Date</th>
-                <th>Veterinarian</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Cliente</th>
+                <th>Mascota</th>
+                <th>Motivo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let v of filteredVeterinarios | slice:(page - 1) * size:(page - 1) * size + size">
-                <td>{{ v.nombre }}</td>
+              <tr *ngFor="let cita of citasFiltradas()">
+                <td>{{ cita.date }}</td>
+                <td>{{ cita.time }}</td>
+                <td>{{ cita.clientName }}</td>
+                <td>{{ cita.petName }}</td>
+                <td>{{ cita.reason }}</td>
                 <td>
-                  <span [ngClass]="getBadgeClass(v.tipo || '')" class="badge-type">
-                    {{ v.tipo || 'Core' }}
+                  <span class="badge-type" [ngClass]="{
+                    'badge-core': cita.status === 'CONFIRMADA',
+                    'badge-noncore': cita.status === 'PENDIENTE',
+                    'badge-overdue': cita.status === 'CANCELADA'
+                  }">
+                    {{ cita.status }}
                   </span>
                 </td>
-                <td>{{ v.fecha || '01 Dec 2023' }}</td>
-                <td class="veterinario-cell">
-                  <span class="veterinario-link">{{ v.nombre }}</span>
-                  <span *ngIf="v.tipo === 'Overdue'" class="find-vet">Find veterinarian</span>
+                <td>
+                  <button
+                    type="button"
+                    class="clear-button"
+                    [disabled]="cita.status === 'CANCELADA'"
+                    (click)="cancelarCita(cita.id)"
+                  >
+                    Cancelar
+                  </button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Paginación sencilla -->
-        <div class="pagination-row" *ngIf="filteredVeterinarios.length > size">
-          <button type="button" (click)="cambiarPagina(-1)" [disabled]="page === 1">
-            Anterior
-          </button>
-          <span>
-            Página {{ page }} de {{ totalPaginas }}
-          </span>
-          <button
-            type="button"
-            (click)="cambiarPagina(1)"
-            [disabled]="page >= totalPaginas"
-          >
-            Siguiente
-          </button>
-        </div>
+        <ng-template #noCitas>
+          <p style="color:#9ca3af; font-size:14px; margin-top:8px;">
+            No hay citas registradas en los mocks.
+          </p>
+        </ng-template>
       </div>
     </main>
   </div>
