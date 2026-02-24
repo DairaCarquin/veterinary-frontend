@@ -16,28 +16,39 @@ export class Login {
   password = '';
   error = '';
 
-  authService;
-  router;
-
-  constructor(authService: AuthService, router: Router) {
-    this.authService = authService;
-    this.router = router;
-  }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly router: Router,
+  ) {}
 
   login() {
-    const user = this.authService.login(this.username, this.password);
+    this.error = '';
 
-    if (!user) {
+    const result = this.authService.login(this.username, this.password);
+
+    if (!result) {
       this.error = 'Usuario o contraseña incorrectos';
       return;
     }
 
-    if (user.role === 'ADMIN') {
+    const roles = result.roles || [];
+
+    if (roles.includes('ADMIN')) {
       this.router.navigate(['/admin']);
-    } else if (user.role === 'VETERINARIO') {
-      this.router.navigate(['/veterinario']);
-    } else if (user.role === 'CLIENTE') {
-      this.router.navigate(['/cliente']);
+      return;
     }
+
+    if (roles.includes('VETERINARIO')) {
+      this.router.navigate(['/veterinario']);
+      return;
+    }
+
+    if (roles.includes('CLIENTE')) {
+      this.router.navigate(['/cliente']);
+      return;
+    }
+
+    // Si por alguna razón no hay rol conocido, regresamos al login
+    this.error = 'Rol de usuario no reconocido en el mock';
   }
 }

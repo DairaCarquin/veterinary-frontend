@@ -1,0 +1,640 @@
+/* Estilo general - Veterinario Dashboard inspirado en PetCare / GuardianVets */
+.dashboard-container {
+  background: radial-gradient(circle at top left, #8b5cf6 0%, #312e81 40%, #0f172a 100%);
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+  border-radius: 24px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 18px 45px rgba(15,23,42,0.35);
+  color: #111827;
+}
+
+.dashboard-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.dashboard-subtitle {
+  color: #cbd5f5;
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: rgba(15,23,42,0.9);
+  border-radius: 999px;
+  padding: 8px 16px;
+  border: 1px solid rgba(148,163,184,0.6);
+}
+
+.search-box input {
+  border: none;
+  margin-left: 8px;
+  outline: none;
+  width: 220px;
+  background: transparent;
+  color: #e5e7eb;
+}
+
+.search-box input::placeholder {
+  color: #9ca3af;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  padding: 24px 0 0;
+}
+
+/* Sidebar */
+.sidebar {
+  background: rgba(15,23,42,0.95);
+  border-radius: 24px;
+  padding: 24px 18px;
+  box-shadow: 0 18px 45px rgba(15,23,42,0.65);
+  border: 1px solid rgba(148,163,184,0.35);
+}
+
+.menu-section {
+  margin-bottom: 32px;
+}
+
+.menu-section h3 {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #6b7280;
+  margin-bottom: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.menu-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-section li {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 999px;
+  color: #e5e7eb;
+  font-size: 14px;
+  margin-bottom: 4px;
+  transition: background 0.2s ease, transform 0.15s ease, color 0.15s ease;
+}
+
+.menu-section li i {
+  margin-right: 12px;
+  font-size: 16px;
+  color: #9ca3af;
+}
+
+.menu-section li:hover {
+  background: linear-gradient(90deg, #4f46e5, #8b5cf6);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.menu-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.menu-link-active {
+  color: #a855f7;
+}
+
+.next-appointment {
+  margin-top: 20px;
+  background: radial-gradient(circle at top left, rgba(56,189,248,0.08), rgba(15,23,42,0.8));
+  border-radius: 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(148,163,184,0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.next-appointment-header {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+
+.next-appointment-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.next-appointment-pet {
+  margin: 0;
+  color: #e5e7eb;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.next-appointment-owner {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.next-appointment-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 13px;
+  color: #e5e7eb;
+}
+
+.perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.perfil-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: radial-gradient(circle at top left, #38bdf8, #0f172a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(148,163,184,0.7);
+}
+
+.perfil-avatar span {
+  color: #e5e7eb;
+  font-weight: 700;
+}
+
+.perfil-info h2 {
+  margin: 0;
+  color: #e5e7eb;
+  font-size: 20px;
+}
+
+.perfil-especialidad {
+  margin: 4px 0;
+}
+
+.perfil-meta {
+  margin: 0;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Estilo principal para badge de especialidad/estado (alto contraste) */
+.badge-core {
+  background: #14532d; /* verde muy oscuro para mejor contraste */
+  color: #f9fafb;
+  border: 1px solid #22c55e;
+}
+
+.pacientes-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.paciente-card {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: radial-gradient(circle at top left, rgba(59,130,246,0.12), rgba(15,23,42,0.85));
+  border: 1px solid rgba(148,163,184,0.45);
+}
+
+.paciente-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.paciente-avatar.perro {
+  background: linear-gradient(135deg, #22c55e, #166534);
+}
+
+.paciente-avatar.gato {
+  background: linear-gradient(135deg, #f97316, #7c2d12);
+}
+
+.paciente-info h3 {
+  margin: 0;
+  color: #e5e7eb;
+  font-size: 15px;
+}
+
+.paciente-raza,
+.paciente-dueno,
+.paciente-telefono {
+  margin: 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.menu-link:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.badge-count {
+  background: #f97316;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+/* Main Content */
+.main-content {
+  background: rgba(15,23,42,0.95);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 18px 55px rgba(15,23,42,0.75);
+  border: 1px solid rgba(148,163,184,0.45);
+}
+
+.activity-tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(148,163,184,0.35);
+  padding-bottom: 12px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 8px 4px;
+  color: #9ca3af;
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.tab.active {
+  color: #a855f7;
+  border-bottom: 2px solid #a855f7;
+  font-weight: 600;
+}
+
+/* Health Monitoring */
+.health-monitoring h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 16px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.metric-card {
+  background: radial-gradient(circle at top left, #1f2937 0%, #020617 100%);
+  border-radius: 18px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(148,163,184,0.45);
+  box-shadow: 0 14px 35px rgba(15,23,42,0.65);
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f9fafb;
+}
+
+/* Stats Cards */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stats-row-secondary {
+  margin-top: 8px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #4f46e5 0%, #a855f7 50%, #ec4899 100%);
+  border-radius: 20px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 18px 40px rgba(88,28,135,0.65);
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #ede9fe;
+  margin-bottom: 12px;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: #f9fafb;
+}
+
+/* Gráfico */
+.chart-container {
+  background: radial-gradient(circle at top left, #1f2937 0%, #020617 100%);
+  border-radius: 20px;
+  padding: 20px 22px;
+  margin-bottom: 32px;
+  border: 1px solid rgba(148,163,184,0.45);
+  box-shadow: 0 16px 36px rgba(15,23,42,0.7);
+}
+
+.chart-container h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 24px;
+}
+
+.chart-bars {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 120px;
+  margin-bottom: 16px;
+}
+
+.chart-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40px;
+}
+
+.bar {
+  width: 8px;
+  background: linear-gradient(180deg, #22c55e, #16a34a);
+  border-radius: 4px 4px 0 0;
+  margin-bottom: 8px;
+}
+
+.bar-label {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.chart-axis {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  color: #6b7280;
+  font-size: 12px;
+  border-top: 1px solid rgba(148,163,184,0.35);
+  padding-top: 12px;
+}
+
+/* Tabla de vacunación */
+.vaccination-section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 16px;
+}
+
+.vets-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vets-table thead {
+  background: linear-gradient(90deg, #4f46e5, #8b5cf6);
+  color: #f9fafb;
+}
+
+.vets-table thead th {
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.vets-table tbody td {
+  padding: 16px;
+  border-bottom: 1px solid rgba(148,163,184,0.3);
+  color: #e5e7eb;
+}
+
+.vets-table tbody tr:hover {
+  background: rgba(79,70,229,0.12);
+}
+
+.filters-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  margin: 16px 0 20px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-field label {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.filter-field input {
+  background: #020617;
+  border-radius: 999px;
+  border: 1px solid rgba(148,163,184,0.45);
+  padding: 8px 14px;
+  color: #e5e7eb;
+  font-size: 13px;
+}
+
+.filter-field input::placeholder {
+  color: #6b7280;
+}
+
+.clear-button {
+  background: rgba(239,68,68,0.12);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid rgba(248,113,113,0.5);
+}
+
+.clear-button:hover {
+  background: rgba(248,113,113,0.28);
+}
+
+.pagination-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.pagination-row button {
+  background: rgba(15,23,42,0.95);
+  border-radius: 999px;
+  border: 1px solid rgba(148,163,184,0.45);
+  color: #e5e7eb;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pagination-row button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.badge-type {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Eliminado duplicado de .badge-core: se usa la versión superior con más contraste */
+
+.badge-noncore {
+  background: rgba(251,191,36,0.12);
+}
+
+.badge-overdue {
+  background: rgba(248,113,113,0.18);
+}
+
+.veterinario-cell {
+  color: #60a5fa;
+  font-weight: 500;
+}
+
+.find-vet {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-left: 8px;
+  font-style: italic;
+}
+
+.subtitulo-citas {
+  color: #9ca3af;
+  font-size: 13px;
+  margin: 4px 0 12px;
+}
+
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.docs-card {
+  background: radial-gradient(circle at top left, #1f2937 0%, #020617 100%);
+  border-radius: 18px;
+  padding: 16px 18px;
+  border: 1px solid rgba(148,163,184,0.45);
+  box-shadow: 0 14px 35px rgba(15,23,42,0.65);
+}
+
+.docs-card h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #e5e7eb;
+}
+
+.docs-card ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: #cbd5f5;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-container {
+    padding: 16px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .search-box input {
+    width: 160px;
+  }
+}
