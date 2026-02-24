@@ -11,27 +11,296 @@
 </header>
 
 <section class="hero">
-    <h1>Cuidamos a quienes más amas</h1>
-    <p>Atención médica profesional para tus mascotas</p>
-    <button>Agendar Cita</button>
+    <div class="hero-text">
+        <h1>Gestión de Clientes</h1>
+        <p>Administra la base de datos de propietarios y sus mascotas vinculadas.</p>
+    </div>
+    <button type="button" class="btn-primario">
+        + Nuevo cliente
+    </button>
 </section>
 
-<section class="servicios">
-    <h2>Nuestros Servicios</h2>
-    <div class="cards">
-        <div class="card">
-            <h3>Consultas</h3>
-            <p>Revisión general y diagnóstico.</p>
-        </div>
-        <div class="card">
-            <h3>Vacunación</h3>
-            <p>Esquemas completos para perros y gatos.</p>
-        </div>
-        <div class="card">
-            <h3>Cirugías</h3>
-            <p>Procedimientos con equipo moderno.</p>
-        </div>
+<section class="widgets-row">
+    <div class="widget-card">
+        <span class="widget-label">Total clientes</span>
+        <span class="widget-value">{{ clientes.length }}</span>
     </div>
+    <div class="widget-card">
+        <span class="widget-label">Mascotas activas</span>
+        <span class="widget-value">{{ clientes.length * 2 }}</span>
+    </div>
+    <div class="widget-card">
+        <span class="widget-label">Nuevos este mes</span>
+        <span class="widget-value">+{{ clientesFiltrados.length }}</span>
+    </div>
+</section>
+
+<section class="cliente-layout">
+    <div class="cliente-form-card">
+        <h2>Registrar cliente</h2>
+        <p class="descripcion">
+            Este formulario simula el flujo del servicio <strong>client-service</strong> con datos mock.
+        </p>
+
+        <!-- Stepper simple -->
+        <div class="stepper">
+            <button
+                type="button"
+                class="step" [class.activo]="registroPaso === 1"
+                (click)="irAPaso(1)"
+            >
+                1. Datos del dueño
+            </button>
+            <button
+                type="button"
+                class="step" [class.activo]="registroPaso === 2"
+                (click)="irAPaso(2)"
+            >
+                2. Mascota inicial
+            </button>
+        </div>
+
+        <form (ngSubmit)="registrarCliente()" #formCliente="ngForm">
+            <div *ngIf="registroPaso === 1" class="form-grid">
+                <div class="form-field">
+                    <label for="nombre">Nombre completo *</label>
+                    <input
+                        id="nombre"
+                        name="nombre"
+                        type="text"
+                        required
+                        [(ngModel)]="nuevoCliente.name"
+                    />
+                </div>
+
+                <div class="form-field">
+                    <label for="email">Correo electrónico *</label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        [(ngModel)]="nuevoCliente.email"
+                    />
+                </div>
+
+                <div class="form-field">
+                    <label for="dni">DNI *</label>
+                    <input
+                        id="dni"
+                        name="dni"
+                        type="text"
+                        required
+                        [class.input-error]="dniDuplicado"
+                        (input)="onDniChange()"
+                        [(ngModel)]="nuevoCliente.dni"
+                    />
+                    <span class="mensaje-error-campo" *ngIf="dniDuplicado">
+                        Este DNI ya está registrado.
+                    </span>
+                </div>
+
+                <div class="form-field">
+                    <label for="phone">Teléfono</label>
+                    <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        [(ngModel)]="nuevoCliente.phone"
+                    />
+                </div>
+
+                <div class="form-field">
+                    <label for="direccion">Dirección</label>
+                    <input
+                        id="direccion"
+                        name="direccion"
+                        type="text"
+                        placeholder="Calle, número, distrito... (mock visual)"
+                    />
+                </div>
+            </div>
+
+            <div *ngIf="registroPaso === 2" class="form-grid">
+                <div class="form-field">
+                    <label for="mascotaNombre">Nombre de la mascota *</label>
+                    <input
+                        id="mascotaNombre"
+                        name="mascotaNombre"
+                        type="text"
+                        required
+                        [(ngModel)]="nuevaMascota.nombre"
+                    />
+                </div>
+
+                <div class="form-field">
+                    <label for="especie">Especie</label>
+                    <select
+                        id="especie"
+                        name="especie"
+                        [(ngModel)]="nuevaMascota.especie"
+                    >
+                        <option value="Perro">Perro</option>
+                        <option value="Gato">Gato</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="raza">Raza</label>
+                    <input
+                        id="raza"
+                        name="raza"
+                        type="text"
+                        [(ngModel)]="nuevaMascota.raza"
+                    />
+                </div>
+
+                <div class="form-field">
+                    <label for="fechaNac">Fecha de nacimiento</label>
+                    <input
+                        id="fechaNac"
+                        name="fechaNac"
+                        type="date"
+                        [(ngModel)]="nuevaMascota.fechaNacimiento"
+                    />
+                </div>
+            </div>
+
+            <div class="acciones-form">
+                <button type="button" (click)="irAPaso(1)" *ngIf="registroPaso === 2">
+                    Volver
+                </button>
+                <button
+                    type="button"
+                    (click)="irAPaso(2)"
+                    *ngIf="registroPaso === 1"
+                >
+                    Siguiente
+                </button>
+                <button type="submit" *ngIf="registroPaso === 2">
+                    Registrar cliente
+                </button>
+            </div>
+
+            <p class="mensaje-exito" *ngIf="mensajeExito">{{ mensajeExito }}</p>
+            <p class="mensaje-error" *ngIf="mensajeError">{{ mensajeError }}</p>
+        </form>
+    </div>
+
+    <div class="cliente-list-card">
+        <div class="toolbar">
+            <div class="buscador">
+                <span class="icono-lupa">🔍</span>
+                <input
+                    type="text"
+                    placeholder="Buscar por nombre, DNI o nombre de mascota..."
+                    [(ngModel)]="terminoBusqueda"
+                />
+            </div>
+            <div class="toolbar-botones">
+                <button type="button" [class.activo]="filtroActivo === 'TODOS'" (click)="filtroActivo = 'TODOS'">Todos</button>
+                <button type="button" [class.activo]="filtroActivo === 'DEUDA'" (click)="filtroActivo = 'DEUDA'">Con deuda</button>
+                <button type="button" [class.activo]="filtroActivo === 'FRECUENTES'" (click)="filtroActivo = 'FRECUENTES'">Frecuentes</button>
+                <button type="button" [class.activo]="filtroActivo === 'MES'" (click)="filtroActivo = 'MES'">Este mes</button>
+                <button type="button" class="btn-exportar" (click)="exportarCsv()">Exportar CSV</button>
+            </div>
+        </div>
+
+        <div class="clientes-lista" *ngIf="clientesFiltrados.length > 0; else sinClientes">
+            <button
+                class="cliente-card"
+                *ngFor="let c of clientesFiltrados"
+                type="button"
+                (click)="seleccionarCliente(c)"
+            >
+                <div class="cliente-icono">👤</div>
+                <div class="cliente-info">
+                    <div class="cliente-nombre">
+                        {{ c.name }}
+                        <span class="cliente-dni">DNI: {{ c.dni }}</span>
+                    </div>
+                    <div class="cliente-contacto">
+                        <span>📞 {{ c.phone || 'Sin teléfono' }}</span>
+                        <span>✉️ {{ c.email }}</span>
+                    </div>
+                    <div class="cliente-mascotas">
+                        <span
+                            class="badge-mascota"
+                            *ngFor="let m of mascotasDeCliente(c)"
+                        >
+                            {{ m.nombre }} {{ m.especie === 'Perro' ? '🐕' : '🐈' }}
+                        </span>
+                        <span *ngIf="mascotasDeCliente(c).length === 0" class="badge-mascota vacio">
+                            Sin mascotas cargadas
+                        </span>
+                    </div>
+                </div>
+                <div class="cliente-acciones">
+                    <span>👁</span>
+                    <span>✏️</span>
+                    <span>🗑️</span>
+                </div>
+            </button>
+        </div>
+
+        <ng-template #sinClientes>
+            <p class="sin-clientes">Aún no hay clientes registrados en el mock.</p>
+        </ng-template>
+    </div>
+
+    <!-- Ficha lateral del cliente -->
+    <aside class="ficha-cliente" *ngIf="clienteSeleccionado as cli">
+        <div class="ficha-header">
+            <h3>{{ cli.name }}</h3>
+            <button type="button" (click)="cerrarFicha()">✕</button>
+        </div>
+        <div class="ficha-section">
+            <h4>Perfil del dueño</h4>
+            <p><strong>DNI:</strong> {{ cli.dni }}</p>
+            <p><strong>Teléfono:</strong> {{ cli.phone || 'Sin teléfono' }}
+                <button
+                    type="button"
+                    class="btn-whatsapp"
+                    *ngIf="cli.phone"
+                >
+                    WhatsApp
+                </button>
+            </p>
+            <p><strong>Email:</strong> {{ cli.email }}</p>
+        </div>
+        <div class="ficha-section">
+            <h4>Mascotas</h4>
+            <div class="ficha-mascotas">
+                <div
+                    class="ficha-mascota-card"
+                    *ngFor="let m of mascotasDeCliente(cli)"
+                >
+                    <div class="ficha-mascota-icono">
+                        {{ m.especie === 'Perro' ? '🐕' : '🐈' }}
+                    </div>
+                    <div>
+                        <p class="ficha-mascota-nombre">{{ m.nombre }}</p>
+                        <p class="ficha-mascota-detalle">{{ m.especie }} · {{ m.edad }}</p>
+                    </div>
+                </div>
+                <p *ngIf="mascotasDeCliente(cli).length === 0" class="sin-clientes">Sin mascotas cargadas en el mock.</p>
+            </div>
+        </div>
+        <div class="ficha-section">
+            <h4>Historial de visitas</h4>
+            <ul class="historial-lista">
+                <li *ngFor="let h of historialVisitasSeleccionado">
+                    <span class="historial-tipo" [class.proxima]="h.tipo === 'PROXIMA'">
+                        {{ h.tipo === 'ULTIMA' ? 'Última' : 'Próxima' }}
+                    </span>
+                    <span class="historial-texto">{{ h.texto }}</span>
+                </li>
+                <li *ngIf="historialVisitasSeleccionado.length === 0" class="sin-clientes">
+                    Sin visitas registradas en el mock.
+                </li>
+            </ul>
+        </div>
+    </aside>
 </section>
 
 <footer>

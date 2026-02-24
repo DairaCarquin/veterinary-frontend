@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Veterinary } from '../../models/veterinary.model';
@@ -6,6 +6,14 @@ import { VeterinaryService } from '../../services/veterinary.service';
 import { AuthService } from '../../services/auth';
 import { Appointment } from '../../models/appointment.model';
 import { AppointmentService } from '../../services/appointment.service';
+
+interface Paciente {
+  name: string;
+  species: string;
+  breed: string;
+  ownerName: string;
+  ownerPhone: string;
+}
 
 @Component({
   selector: 'app-veterinario',
@@ -15,11 +23,7 @@ import { AppointmentService } from '../../services/appointment.service';
   styleUrl: './veterinario.css',
 })
 export class Veterinario implements OnInit {
-  @ViewChild('perfilSection')
-  private readonly perfilSection?: ElementRef<HTMLElement>;
-
-  @ViewChild('citasSection')
-  private readonly citasSection?: ElementRef<HTMLElement>;
+  activeSection: 'DASHBOARD' | 'PERFIL' | 'CITAS' | 'PACIENTES' | 'CONFIG' | 'DOCS' = 'PERFIL';
 
   veterinarioActual: Veterinary | null = null;
 
@@ -42,9 +46,50 @@ export class Veterinario implements OnInit {
   // Citas mock
   citas: Appointment[] = [];
   filtroEstado: 'TODAS' | 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' = 'TODAS';
+  filtroTexto = '';
+
+  // Pacientes mock (podrían venir de un servicio dedicado)
+  pacientes: Paciente[] = [
+    {
+      name: 'Luna',
+      species: 'Perro',
+      breed: 'Labrador',
+      ownerName: 'Pedro Gómez',
+      ownerPhone: '987654321',
+    },
+    {
+      name: 'Max',
+      species: 'Perro',
+      breed: 'Pastor Alemán',
+      ownerName: 'Laura Sánchez',
+      ownerPhone: '912345678',
+    },
+    {
+      name: 'Michi',
+      species: 'Gato',
+      breed: 'Siames',
+      ownerName: 'Carlos López',
+      ownerPhone: '954321987',
+    },
+  ];
+
+  pacienteBusqueda = '';
 
   mensajeExito = '';
   mensajeError = '';
+
+  // Preferencias de configuración (mock)
+  notifEmail = true;
+  notifRecordatorios = true;
+  duracionCitaMin = 30;
+  horarioManana = {
+    inicio: '09:00',
+    fin: '13:00',
+  };
+  horarioTarde = {
+    inicio: '16:00',
+    fin: '20:00',
+  };
 
   constructor(
     private readonly veterinaryService: VeterinaryService,
@@ -148,25 +193,104 @@ export class Veterinario implements OnInit {
     return this.valores.reduce((acumulado, valor) => acumulado + valor, 0);
   }
 
-  irAMiPerfil(): void {
-    if (!this.perfilSection) {
-      return;
+  get totalCitas(): number {
+    return this.citas.length;
+  }
+
+  get totalPendientes(): number {
+    return this.citas.filter((cita) => cita.status === 'PENDIENTE').length;
+  }
+
+  get totalConfirmadas(): number {
+    return this.citas.filter((cita) => cita.status === 'CONFIRMADA').length;
+  }
+
+  get totalCanceladas(): number {
+    return this.citas.filter((cita) => cita.status === 'CANCELADA').length;
+  }
+
+  get proximaCita(): Appointment | null {
+    if (this.citas.length === 0) {
+      return null;
     }
-    this.perfilSection.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const ahora = new Date();
+
+    const futuras = this.citas
+      .map((cita) => {
+        const fechaHora = new Date(`${cita.date}T${cita.time}`);
+        return { cita, fechaHora };
+      })
+      .filter((item) => item.fechaHora >= ahora)
+      .sort((a, b) => a.fechaHora.getTime() - b.fechaHora.getTime());
+
+    if (futuras.length > 0) {
+      return futuras[0].cita;
+    }
+
+    // Si no hay futuras, mostramos la primera por orden cronológico como referencia
+    const ordenadas = this.citas
+      .map((cita) => {
+        const fechaHora = new Date(`${cita.date}T${cita.time}`);
+        return { cita, fechaHora };
+      })
+      .sort((a, b) => a.fechaHora.getTime() - b.fechaHora.getTime());
+
+    return ordenadas.length > 0 ? ordenadas[0].cita : null;
+  }
+
+  get pacientesFiltrados(): Paciente[] {
+    const texto = this.pacienteBusqueda.trim().toLowerCase();
+    if (texto.length === 0) {
+      return this.pacientes;
+    }
+
+    return this.pacientes.filter((p) => {
+      const nombre = p.name.toLowerCase();
+      const raza = p.breed.toLowerCase();
+      const dueno = p.ownerName.toLowerCase();
+      return nombre.includes(texto) || raza.includes(texto) || dueno.includes(texto);
+    });
+  }
+
+  irAMiPerfil(): void {
+    this.activeSection = 'PERFIL';
   }
 
   irAMisCitas(): void {
-    if (!this.citasSection) {
-      return;
-    }
-    this.citasSection.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    this.activeSection = 'CITAS';
+  }
+
+  irAPacientes(): void {
+    this.activeSection = 'PACIENTES';
+  }
+
+  irADocumentacion(): void {
+    this.activeSection = 'DOCS';
+  }
+
+  irAConfiguracion(): void {
+    this.activeSection = 'CONFIG';
   }
 
   citasFiltradas(): Appointment[] {
-    if (this.filtroEstado === 'TODAS') {
-      return this.citas;
+    let resultado = this.citas;
+
+    if (this.filtroEstado !== 'TODAS') {
+      resultado = resultado.filter((cita) => cita.status === this.filtroEstado);
     }
-    return this.citas.filter((cita) => cita.status === this.filtroEstado);
+
+    const texto = this.filtroTexto.trim().toLowerCase();
+    if (texto.length > 0) {
+      resultado = resultado.filter((cita) => {
+        const cliente = cita.clientName.toLowerCase();
+        const mascota = cita.petName.toLowerCase();
+        const motivo = cita.reason.toLowerCase();
+        return cliente.includes(texto) || mascota.includes(texto) || motivo.includes(texto);
+      });
+    }
+
+    return resultado;
   }
 
   cancelarCita(id: number): void {
@@ -176,6 +300,19 @@ export class Veterinario implements OnInit {
         return;
       }
       this.mensajeExito = 'Cita cancelada (mock).';
+      if (this.veterinarioActual) {
+        this.cargarCitas(this.veterinarioActual.id);
+      }
+    });
+  }
+
+  confirmarCita(id: number): void {
+    this.appointmentService.updateStatus(id, 'CONFIRMADA').subscribe((updated) => {
+      if (!updated) {
+        this.mensajeError = 'No se pudo confirmar la cita (mock).';
+        return;
+      }
+      this.mensajeExito = 'Cita confirmada (mock).';
       if (this.veterinarioActual) {
         this.cargarCitas(this.veterinarioActual.id);
       }
