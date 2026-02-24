@@ -1,1 +1,154 @@
-<p>admin works!</p>
+<div class="dashboard">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">GV</div>
+      <div class="brand-text">GuardianVets</div>
+    </div>
+
+    <nav class="nav-menu">
+      <div class="nav-item active">
+        <span class="icon">📊</span>
+        Dashboard
+      </div>
+      <div class="nav-item">
+        <span class="icon">🐾</span>
+        Pet profile
+      </div>
+      <div class="nav-section">
+        <div class="nav-item">
+          <span class="icon">📈</span>
+          Analytics
+        </div>
+        <div class="nav-subitem">Health monitoring</div>
+        <div class="nav-subitem">Vaccination schedule</div>
+      </div>
+      <div class="nav-item">
+        <span class="icon">📅</span>
+        Appointments
+      </div>
+      <div class="nav-item">
+        <span class="icon">⚙️</span>
+        Settings
+      </div>
+      <div class="nav-item">
+        <span class="icon">📄</span>
+        Documentation
+      </div>
+    </nav>
+
+    <div class="logout">
+      <span class="icon">🚪</span>
+      Log out
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <h1>Bienvenido, Admin</h1>
+      <div class="user-profile">
+        <span class="notification">🔔</span>
+        <span class="user-avatar">AD</span>
+      </div>
+    </header>
+
+    <!-- Activity Cards -->
+    <section class="activity-section">
+      <div class="activity-tabs">
+        <button class="tab active">Daily</button>
+        <button class="tab">Weekly</button>
+        <button class="tab">Monthly</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Consultas hoy</span>
+            <span class="stat-icon">🏥</span>
+          </div>
+          <div class="stat-value">25%</div>
+          <div class="stat-progress">
+            <div class="progress-bar" style="width: 25%"></div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Pacientes activos</span>
+            <span class="stat-icon">🐕</span>
+          </div>
+          <div class="stat-value">79%</div>
+          <div class="stat-progress">
+            <div class="progress-bar" style="width: 79%"></div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Vacunas al día</span>
+            <span class="stat-icon">💉</span>
+          </div>
+          <div class="stat-value">52%</div>
+          <div class="stat-progress">
+            <div class="progress-bar" style="width: 52%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Health Monitoring Chart -->
+    <section class="chart-section">
+      <h2>Health Monitoring</h2>
+      <div class="chart-container">
+        <canvas id="healthChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Vaccination Schedule -->
+    <section class="vaccination-section">
+      <h2>Vaccination Schedule</h2>
+      <div class="table-container">
+        <table class="vaccination-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Veterinarian</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Rabies</td>
+              <td><span class="badge overdue">Overdue</span></td>
+              <td>01 Dec 2023</td>
+              <td>
+                <button class="vet-link">Find veterinarian →</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Bordetella</td>
+              <td><span class="badge noncore">Noncore</span></td>
+              <td>11 Dec 2024</td>
+              <td>James Grey</td>
+            </tr>
+            <tr>
+              <td>Distemper</td>
+              <td><span class="badge core">Core</span></td>
+              <td>27 Jun 2024</td>
+              <td>Jim Brown</td>
+            </tr>
+            <tr>
+              <td>Calicivirus</td>
+              <td><span class="badge core">Core</span></td>
+              <td>16 Sep 2024</td>
+              <td>Helen Brooks</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>

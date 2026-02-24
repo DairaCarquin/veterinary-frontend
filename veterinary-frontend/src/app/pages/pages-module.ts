@@ -1,12 +1,24 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-
+import { RouterModule } from '@angular/router';
+import { Admin } from './admin/admin';
+import { Veterinario } from './veterinario/veterinario';
+import { Cliente } from './cliente/cliente';
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    Admin,
+    Veterinario,
+    Cliente
+  ],
   imports: [
-    CommonModule
+    CommonModule,
+    RouterModule
+  ],
+  exports: [
+    Admin,
+    Veterinario,
+    Cliente
   ]
 })
 export class PagesModule { }
