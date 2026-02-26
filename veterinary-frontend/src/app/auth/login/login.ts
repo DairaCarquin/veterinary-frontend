@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -23,32 +25,37 @@ export class Login {
 
   login() {
     this.error = '';
+    this.authService
+      .login(this.username, this.password)
+      .pipe(
+        catchError(() => {
+          this.error = 'Usuario o contraseña incorrectos';
+          return of(null);
+        }),
+      )
+      .subscribe((result) => {
+        if (!result) {
+          return;
+        }
 
-    const result = this.authService.login(this.username, this.password);
+        const role = result.role?.toUpperCase() ?? '';
 
-    if (!result) {
-      this.error = 'Usuario o contraseña incorrectos';
-      return;
-    }
+        if (role === 'ADMIN') {
+          this.router.navigate(['/admin']);
+          return;
+        }
 
-    const roles = result.roles || [];
+        if (role === 'VETERINARY' || role === 'VETERINARIO') {
+          this.router.navigate(['/veterinario']);
+          return;
+        }
 
-    if (roles.includes('ADMIN')) {
-      this.router.navigate(['/admin']);
-      return;
-    }
+        if (role === 'CLIENT') {
+          this.router.navigate(['/cliente']);
+          return;
+        }
 
-    if (roles.includes('VETERINARIO')) {
-      this.router.navigate(['/veterinario']);
-      return;
-    }
-
-    if (roles.includes('CLIENTE')) {
-      this.router.navigate(['/cliente']);
-      return;
-    }
-
-    // Si por alguna razón no hay rol conocido, regresamos al login
-    this.error = 'Rol de usuario no reconocido en el mock';
+        this.error = 'Rol de usuario no reconocido.';
+      });
   }
 }

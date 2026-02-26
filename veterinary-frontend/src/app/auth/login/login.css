@@ -108,7 +108,7 @@
 	flex: 0 0 58%;
 	border: none;
 	border-radius: 999px;
-	background: linear-gradient(90deg, #4f8dfd, #6aa9ff);
+	background: linear-gradient(90deg, #1d4ed8, #1e3a8a);
 	color: #ffffff;
 	padding: 0.7rem 1.2rem;
 	font-weight: 600;
@@ -131,7 +131,9 @@
 	flex: 1;
 	text-align: right;
 	font-size: 0.85rem;
-	color: #0b1f4a;
+	color: #111827;
+	background-color: #ffffff;
+	font-weight: 500;
 	text-decoration: none;
 }
 

@@ -6,19 +6,7 @@ import { Veterinario } from './veterinario/veterinario';
 import { Cliente } from './cliente/cliente';
 
 @NgModule({
-  declarations: [
-    Admin,
-    Veterinario,
-    Cliente
-  ],
-  imports: [
-    CommonModule,
-    RouterModule
-  ],
-  exports: [
-    Admin,
-    Veterinario,
-    Cliente
-  ]
+  imports: [CommonModule, RouterModule, Admin, Veterinario, Cliente],
+  exports: [Admin, Veterinario, Cliente],
 })
-export class PagesModule { }
+export class PagesModule {}
