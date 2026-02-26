@@ -1,20 +1,14 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 .dashboard {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: radial-gradient(circle at top left, var(--color-primary-dark) 0%, #020617 55%, #020617 100%);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* Sidebar */
 .sidebar {
   width: 280px;
-  background: white;
+  background: var(--color-surface);
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
@@ -32,7 +26,7 @@
   width: 45px;
   height: 45px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -44,9 +38,7 @@
 .brand-text {
   font-weight: 700;
   font-size: 1.4rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--color-text-main);
 }
 
 /* Navegación */
@@ -63,19 +55,19 @@
   gap: 1rem;
   padding: 0.85rem 1.2rem;
   border-radius: 12px;
-  color: #4a5568;
+  color: var(--color-text-main);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .nav-item:hover {
-  background: #f7f9fc;
-  color: #667eea;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
   color: white;
 }
 
@@ -85,15 +77,15 @@
 
 .nav-subitem {
   padding: 0.6rem 1.2rem 0.6rem 3.2rem;
-  color: #718096;
+  color: var(--color-text-main);
   font-size: 0.9rem;
   cursor: pointer;
   border-radius: 8px;
 }
 
 .nav-subitem:hover {
-  background: #f7f9fc;
-  color: #667eea;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
 
 .logout {
@@ -119,6 +111,7 @@
   flex: 1;
   padding: 2rem 3rem;
   overflow-y: auto;
+  color: var(--color-text-main);
 }
 
 .header {
@@ -131,7 +124,7 @@
 .header h1 {
   font-size: 1.8rem;
   font-weight: 600;
-  color: white;
+  color: var(--color-surface);
 }
 
 .user-profile {
@@ -149,20 +142,21 @@
   width: 45px;
   height: 45px;
   border-radius: 12px;
-  background: white;
+  background: var(--color-surface);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  color: #667eea;
+  color: var(--color-primary);
 }
 
 .activity-section {
-  background: white;
+  background: rgba(15, 23, 42, 0.96);
   border-radius: 24px;
   padding: 1.8rem;
   margin-bottom: 2rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-soft);
+  color: #e5e7eb;
 }
 
 .activity-tabs {
@@ -174,16 +168,16 @@
 .tab {
   padding: 0.6rem 1.5rem;
   border: none;
-  background: #f7f9fc;
+  background: rgba(15, 23, 42, 0.6);
   border-radius: 999px;
   font-weight: 500;
-  color: #4a5568;
+  color: #e5e7eb;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .tab.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
   color: white;
 }
 
@@ -194,7 +188,7 @@
 }
 
 .stat-card {
-  background: #fafcff;
+  background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), rgba(15, 23, 42, 0.96));
   border-radius: 16px;
   padding: 1.2rem;
   border: 1px solid #e2e8f0;
@@ -208,7 +202,7 @@
 }
 
 .stat-title {
-  color: #718096;
+  color: #e5e7eb;
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -220,7 +214,7 @@
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #2d3748;
+  color: #f9fafb;
   margin-bottom: 0.75rem;
 }
 
@@ -234,20 +228,20 @@
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-accent) 100%);
   border-radius: 999px;
   transition: width 0.3s ease;
 }
 
 .chart-section {
-  background: white;
+  background: rgba(15, 23, 42, 0.96);
   border-radius: 24px;
   padding: 1.8rem;
   margin-bottom: 2rem;
 }
 
 .chart-section h2 {
-  color: #2d3748;
+  color: #e5e7eb;
   font-size: 1.3rem;
   margin-bottom: 1.5rem;
 }
@@ -258,13 +252,13 @@
 }
 
 .vaccination-section {
-  background: white;
+  background: rgba(15, 23, 42, 0.96);
   border-radius: 24px;
   padding: 1.8rem;
 }
 
 .vaccination-section h2 {
-  color: #2d3748;
+  color: #e5e7eb;
   font-size: 1.3rem;
   margin-bottom: 1.5rem;
 }
@@ -281,8 +275,8 @@
 .vaccination-table th {
   text-align: left;
   padding: 1rem 1rem;
-  background: #f8fafd;
-  color: #4a5568;
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
   font-weight: 600;
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -292,7 +286,7 @@
 .vaccination-table td {
   padding: 1rem 1rem;
   border-bottom: 1px solid #e2e8f0;
-  color: #2d3748;
+  color: #e5e7eb;
 }
 
 .badge {
@@ -304,23 +298,23 @@
 
 .badge.overdue {
   background: #fed7d7;
-  color: #c53030;
+  color: #1a202c;
 }
 
 .badge.noncore {
   background: #feebc8;
-  color: #c05621;
+  color: #1a202c;
 }
 
 .badge.core {
   background: #c6f6d5;
-  color: #276749;
+  color: #1a202c;
 }
 
 .vet-link {
   background: none;
   border: none;
-  color: #667eea;
+  color: var(--color-primary);
   font-weight: 500;
   cursor: pointer;
   padding: 0;
