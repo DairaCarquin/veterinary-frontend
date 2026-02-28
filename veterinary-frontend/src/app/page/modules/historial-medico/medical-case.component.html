@@ -1,0 +1,17 @@
+<div class="header-container">
+  <h2>Gestión de Historial Médico</h2>
+</div>
+
+<app-dynamic-table
+  [columns]="columns"
+  [data]="cases"
+  [page]="page"
+  [size]="size"
+  [total]="total"
+  [showActions]="true"
+  [actions]="actions"
+  (filterChange)="loadCases($event)"
+  (pageChange)="page = $event; loadCases()"
+  (sizeChange)="size = $event; page = 0; loadCases()"
+  (actionClick)="handleAction($event)">
+</app-dynamic-table>

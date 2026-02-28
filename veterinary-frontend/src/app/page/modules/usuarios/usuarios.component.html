@@ -1,0 +1,101 @@
+<div class="header-container">
+  <h2>Gestión de Usuarios</h2>
+
+  <button class="btn-add" (click)="openCreateModal()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<app-dynamic-table
+  [columns]="columns"
+  [data]="users"
+  [filters]="filters"
+  [page]="page"
+  [size]="size"
+  [total]="total"
+  [showActions]="true"
+  [actions]="actions"
+  (filterChange)="loadUsers($event)"
+  (pageChange)="onPageChange($event)"
+  (sizeChange)="onSizeChange($event)"
+  (actionClick)="handleAction($event)">
+</app-dynamic-table>
+
+<div class="modal-overlay" *ngIf="showCreateModal">
+  <div class="modal">
+    <h2>Crear Usuario</h2>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input [(ngModel)]="newUser.username" />
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" [(ngModel)]="newUser.password" />
+    </div>
+
+    <div class="form-group">
+      <label>Rol</label>
+      <select [(ngModel)]="newUser.role">
+        <option value="">Seleccione rol</option>
+        <option value="ADMIN">ADMIN</option>
+        <option value="CLIENT">CLIENT</option>
+        <option value="VETERINARY">VETERINARY</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
+      <button class="btn-primary" (click)="createUser()">Crear</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showEditModal">
+  <div class="modal">
+    <h2>Actualizar Usuario</h2>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input [(ngModel)]="selectedUser.username" />
+    </div>
+
+  <div class="form-group">
+    <label>Rol</label>
+    <input
+      [value]="selectedUser.roleId + ' - ' + roleMap[selectedUser.roleId]"
+      disabled
+      class="input-disabled"
+    />
+  </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
+      <button class="btn-primary" (click)="updateUser()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showConfirmModal">
+  <div class="confirm-card">
+
+    <h3>
+      {{ selectedUser?.enabled ? 'Desactivar Usuario' : 'Activar Usuario' }}
+    </h3>
+
+    <p>
+      {{ selectedUser?.enabled
+      ? 'El usuario dejará de tener acceso.'
+      : 'El usuario será habilitado.' }}
+    </p>
+
+    <div class="confirm-actions">
+      <button class="btn-secondary" (click)="closeModals()">Cancelar</button>
+      <button class="btn-danger" (click)="confirmToggle()">
+        {{ selectedUser?.enabled ? 'Desactivar' : 'Activar' }}
+      </button>
+    </div>
+
+  </div>
+</div>

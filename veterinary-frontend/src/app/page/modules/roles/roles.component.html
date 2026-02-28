@@ -1,0 +1,71 @@
+<div class="header-container">
+  <h2>Gestión de Roles</h2>
+
+  <button class="btn-add" (click)="openCreateModal()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<app-dynamic-table
+  [columns]="columns"
+  [data]="roles"
+  [filters]="filters"
+  [page]="page"
+  [size]="size"
+  [total]="total"
+  [showActions]="true"
+  [actions]="actions"
+  (filterChange)="loadRoles($event)"
+  (pageChange)="onPageChange($event)"
+  (sizeChange)="onSizeChange($event)"
+  (actionClick)="handleAction($event)">
+</app-dynamic-table>
+
+<div class="modal-overlay" *ngIf="showCreateModal">
+  <div class="modal">
+    <h2>Crear Rol</h2>
+
+    <div class="form-group">
+      <label>Nombre</label>
+      <input [(ngModel)]="selectedRole.name" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
+      <button class="btn-primary" (click)="createRole()">Crear</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showEditModal">
+  <div class="modal">
+    <h2>Actualizar Rol</h2>
+
+    <div class="form-group">
+      <label>Nombre</label>
+      <input [(ngModel)]="selectedRole.name" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
+      <button class="btn-primary" (click)="updateRole()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showConfirmModal">
+  <div class="confirm-card">
+
+    <h3>
+      {{ selectedRole?.enabled ? 'Desactivar Rol' : 'Activar Rol' }}
+    </h3>
+
+    <div class="confirm-actions">
+      <button class="btn-secondary" (click)="closeModals()">Cancelar</button>
+      <button class="btn-danger" (click)="confirmToggle()">
+        {{ selectedRole?.enabled ? 'Desactivar' : 'Activar' }}
+      </button>
+    </div>
+
+  </div>
+</div>

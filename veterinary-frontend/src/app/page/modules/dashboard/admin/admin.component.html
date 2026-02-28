@@ -1,0 +1,63 @@
+<div class="dashboard">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <div>
+      <h2>Panel Administrativo</h2>
+      <p>Resumen general de la clínica veterinaria</p>
+    </div>
+  </div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
+
+    <div class="kpi pastel-pink">
+      <div class="kpi-icon">💰</div>
+      <h3>S/. {{kpis?.revenue}}</h3>
+      <span>Ingresos</span>
+    </div>
+
+    <div class="kpi pastel-orange">
+      <div class="kpi-icon">📅</div>
+      <h3>{{kpis?.appointments}}</h3>
+      <span>Citas</span>
+    </div>
+
+    <div class="kpi pastel-green">
+      <div class="kpi-icon">🐶</div>
+      <h3>{{kpis?.pets}}</h3>
+      <span>Mascotas</span>
+    </div>
+
+    <div class="kpi pastel-purple">
+      <div class="kpi-icon">👤</div>
+      <h3>{{kpis?.newClients}}</h3>
+      <span>Nuevos Clientes</span>
+    </div>
+
+  </div>
+
+  <!-- GRÁFICOS -->
+  <div class="charts-grid">
+
+    <div class="card">
+      <h4>Ingresos Semanales</h4>
+      <apx-chart
+        [series]="revenueSeries"
+        [chart]="revenueChart"
+        [xaxis]="revenueXAxis">
+      </apx-chart>
+    </div>
+
+    <div class="card">
+      <h4>Satisfacción</h4>
+      <apx-chart
+        [series]="satisfactionSeries"
+        [chart]="lineChart"
+        [xaxis]="monthsXAxis">
+      </apx-chart>
+    </div>
+
+  </div>
+
+</div>

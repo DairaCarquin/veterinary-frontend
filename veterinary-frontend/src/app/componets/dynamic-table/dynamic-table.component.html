@@ -1,0 +1,74 @@
+<div class="table-filters" *ngIf="filters.length > 0">
+  <div *ngFor="let f of filters" class="filter-field">
+    <label>{{ f.label }}</label>
+    <input type="text" [(ngModel)]="filterValues[f.key]" [placeholder]="f.placeholder || ''" />
+  </div>
+
+  <button class="btn-filter" (click)="applyFilters()">
+    <mat-icon>search</mat-icon>
+  </button>
+</div>
+
+<table class="custom-table">
+  <thead>
+    <tr>
+      <th *ngFor="let col of columns">
+        {{ col.label }}
+      </th>
+      <th *ngIf="showActions">Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let row of data">
+      <td *ngFor="let col of columns">
+        {{ row[col.key] }}
+      </td>
+
+      <td *ngIf="showActions" class="actions-cell">
+        <ng-container *ngFor="let action of actions">
+          <button *ngIf="action.visible !== false" class="action-btn"
+            [ngStyle]="{'background-color': action.color || '#f3f4f6'}" (click)="onAction(action.name, row)">
+            <mat-icon [ngStyle]="{'color': action.iconColor || '#111'}">
+              {{ action.icon }}
+            </mat-icon>
+          </button>
+        </ng-container>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="table-pagination">
+
+  <div class="pagination-info">
+    Mostrando {{ data.length }} de {{ total }} registros
+  </div>
+
+  <div class="pagination-controls">
+
+    <button (click)="prevPage()" [disabled]="page === 0" class="page-btn">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <span class="page-indicator">
+      Página {{ page + 1 }} de {{ totalPages || 1 }}
+    </span>
+
+    <button (click)="nextPage()" [disabled]="page + 1 >= totalPages" class="page-btn">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+
+  </div>
+
+  <div class="pagination-size">
+    <label>Items por página</label>
+    <select [ngModel]="size" (ngModelChange)="changeSize($event)">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="20">20</option>
+      <option [value]="50">50</option>
+    </select>
+  </div>
+
+</div>

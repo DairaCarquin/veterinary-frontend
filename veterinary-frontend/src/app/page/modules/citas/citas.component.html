@@ -1,0 +1,119 @@
+<div class="header-container">
+  <h2>Gestión de Citas</h2>
+
+  <button class="btn-add" (click)="openCreateModal()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<app-dynamic-table [columns]="columns" [data]="appointments" [filters]="filters" [page]="page" [size]="size"
+  [total]="total" [showActions]="true" [actions]="actions" (filterChange)="loadAppointments($event)"
+  (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)" (actionClick)="handleAction($event)">
+</app-dynamic-table>
+
+<div class="modal-overlay" *ngIf="showCreateModal">
+  <div class="modal">
+    <h2>Crear Cita</h2>
+
+    <div class="form-group">
+      <label>Mascota ID</label>
+      <input type="number" [(ngModel)]="newAppointment.petId" />
+    </div>
+
+    <div class="form-group">
+      <label>Cliente ID</label>
+      <input type="number" [(ngModel)]="newAppointment.clientId" />
+    </div>
+
+    <div class="form-group">
+      <label>Veterinario ID</label>
+      <input type="number" [(ngModel)]="newAppointment.veterinarianId" />
+    </div>
+
+    <div class="form-group">
+      <label>Fecha</label>
+      <input type="datetime-local" [(ngModel)]="newAppointment.appointmentDate" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
+      <button class="btn-primary" (click)="createAppointment()">Crear</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showStatusModal">
+  <div class="modal">
+    <h2>Cambiar Estado</h2>
+
+    <div class="form-group">
+      <label>Nuevo Estado</label>
+      <select [(ngModel)]="selectedStatus">
+        <option value="RESCHEDULED">RESCHEDULED</option>
+        <option value="ATTENDED">ATTENDED</option>
+        <option value="CANCELLED">CANCELLED</option>
+        <option value="PAID">PAID</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
+      <button class="btn-primary" (click)="updateStatus()">Actualizar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showConfirmModal">
+  <div class="confirm-card">
+
+    <div class="confirm-icon">
+      <mat-icon>
+        {{ selectedAppointment?.enabled ? 'warning' : 'check_circle' }}
+      </mat-icon>
+    </div>
+
+    <h3>
+      {{ selectedAppointment?.enabled ? 'Desactivar Cita' : 'Activar Cita' }}
+    </h3>
+
+    <p>
+      {{ selectedAppointment?.enabled
+      ? 'La cita dejará de estar disponible en el sistema.'
+      : 'La cita volverá a estar habilitada.' }}
+    </p>
+
+    <div class="confirm-actions">
+      <button class="btn-secondary" (click)="closeModals()">
+        Cancelar
+      </button>
+
+      <button class="btn-danger" (click)="confirmToggle()">
+        {{ selectedAppointment?.enabled ? 'Desactivar' : 'Activar' }}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showRescheduleModal">
+  <div class="modal">
+    <h2>Reprogramar Cita</h2>
+
+    <div class="form-group">
+      <label>Nueva Fecha</label>
+      <input type="datetime-local" [(ngModel)]="newRescheduleDate" />
+    </div>
+
+    <div class="form-group">
+      <label>Nuevo Veterinario (Opcional)</label>
+      <input type="number" [(ngModel)]="newRescheduleVetId" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
+      <button class="btn-primary" (click)="confirmReschedule()">
+        Reprogramar
+      </button>
+    </div>
+  </div>
+</div>

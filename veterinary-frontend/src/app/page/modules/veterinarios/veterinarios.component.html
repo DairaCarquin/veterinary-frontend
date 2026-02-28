@@ -1,0 +1,64 @@
+<div>
+  <h2>Gestión de Veterinarios</h2>
+
+  <app-dynamic-table
+    [columns]="columns"
+    [data]="vets"
+    [filters]="filters"
+    [page]="page"
+    [size]="size"
+    [total]="total"
+    [showActions]="true"
+    [actions]="actions"
+    (filterChange)="loadVets($event)"
+    (pageChange)="onPageChange($event)"
+    (sizeChange)="onSizeChange($event)"
+    (actionClick)="handleAction($event)">
+  </app-dynamic-table>
+</div>
+
+<div class="modal-overlay" *ngIf="showEditModal">
+  <div class="modal">
+    <h2>Actualizar Veterinario</h2>
+
+    <div class="form-group">
+      <label>Nombre</label>
+      <input [(ngModel)]="selectedVet.name" />
+    </div>
+
+    <div class="form-group">
+      <label>Especialidad</label>
+      <input [(ngModel)]="selectedVet.specialty" />
+    </div>
+
+    <div class="form-group">
+      <label>N° Licencia</label>
+      <input [(ngModel)]="selectedVet.licenseNumber" />
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input [(ngModel)]="selectedVet.email" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
+      <button class="btn-primary" (click)="updateVet()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showConfirmModal">
+  <div class="confirm-card">
+    <h3>
+      {{ selectedVet?.enabled ? 'Desactivar Veterinario' : 'Activar Veterinario' }}
+    </h3>
+
+    <div class="confirm-actions">
+      <button class="btn-secondary" (click)="closeModals()">Cancelar</button>
+      <button class="btn-danger" (click)="confirmToggle()">
+        {{ selectedVet?.enabled ? 'Desactivar' : 'Activar' }}
+      </button>
+    </div>
+  </div>
+</div>

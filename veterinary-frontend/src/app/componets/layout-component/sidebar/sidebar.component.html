@@ -1,0 +1,39 @@
+<aside class="sidebar">
+
+  <!-- Brand -->
+  <div class="brand-logo">
+    <img src="assets/logo.png" alt="MasterDog" style="width: stretch;margin-bottom: 20px;" />
+  </div>
+
+  <!-- Menu -->
+  <div class="menu">
+
+    <div *ngFor="let item of filteredMenu"
+      class="nav-item"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: item.route === '/admin' || item.route === '/cliente' || item.route === '/veterinario' }">
+
+      <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+      <span class="nav-label">{{ item.label }}</span>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+
+    <div class="logout" (click)="logout()">
+      <mat-icon style="
+          font-size: 13px;
+          height: 13px;
+          width: 13px;">
+        logout
+      </mat-icon>
+      <span>Logout</span>
+    </div>
+
+  </div>
+
+</aside>
