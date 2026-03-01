@@ -15,19 +15,39 @@
   <div class="modal">
     <h2>Crear Cita</h2>
 
-    <div class="form-group">
-      <label>Mascota ID</label>
-      <input type="number" [(ngModel)]="newAppointment.petId" />
+    <div *ngIf="errorMsg"
+      style="background: #fee2e2; color: #b91c1c; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+      {{ errorMsg }}
     </div>
 
     <div class="form-group">
-      <label>Cliente ID</label>
-      <input type="number" [(ngModel)]="newAppointment.clientId" />
+      <label>Cliente</label>
+      <select [(ngModel)]="newAppointment.clientId" (change)="onClientChange()">
+        <option value="">-- Seleccionar --</option>
+        <option *ngFor="let c of clients" [value]="c.id">
+          {{ c.firstName }} {{ c.lastName }}
+        </option>
+      </select>
     </div>
 
     <div class="form-group">
-      <label>Veterinario ID</label>
-      <input type="number" [(ngModel)]="newAppointment.veterinarianId" />
+      <label>Mascota</label>
+      <select [(ngModel)]="newAppointment.petId">
+        <option value="">-- Seleccionar --</option>
+        <option *ngFor="let p of filteredPets" [value]="p.id">
+          {{ p.name }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Veterinario</label>
+      <select [(ngModel)]="newAppointment.veterinarianId">
+        <option value="">-- Seleccionar --</option>
+        <option *ngFor="let v of vets" [value]="v.id">
+          {{ v.name }}
+        </option>
+      </select>
     </div>
 
     <div class="form-group">

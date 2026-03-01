@@ -6,24 +6,19 @@
   </button>
 </div>
 
-<app-dynamic-table
-  [columns]="columns"
-  [data]="pets"
-  [filters]="filters"
-  [page]="page"
-  [size]="size"
-  [total]="total"
-  [showActions]="true"
-  [actions]="actions"
-  (filterChange)="loadPets($event)"
-  (pageChange)="onPageChange($event)"
-  (sizeChange)="onSizeChange($event)"
-  (actionClick)="handleAction($event)">
+<app-dynamic-table [columns]="columns" [data]="pets" [filters]="filters" [page]="page" [size]="size" [total]="total"
+  [showActions]="true" [actions]="actions" (filterChange)="loadPets($event)" (pageChange)="onPageChange($event)"
+  (sizeChange)="onSizeChange($event)" (actionClick)="handleAction($event)">
 </app-dynamic-table>
 
 <div class="modal-overlay" *ngIf="showCreateModal">
   <div class="modal">
     <h2>Registrar Mascota</h2>
+
+    <div *ngIf="errorMsg"
+      style="background: #fee2e2; color: #b91c1c; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+      {{ errorMsg }}
+    </div>
 
     <div class="form-group">
       <label>Nombre</label>
@@ -46,8 +41,13 @@
     </div>
 
     <div class="form-group">
-      <label>Owner ID</label>
-      <input type="number" [(ngModel)]="selectedPet.ownerId" />
+      <label>Propietario (Cliente)</label>
+      <select [(ngModel)]="selectedPet.ownerId">
+        <option [value]="null">-- Seleccionar --</option>
+        <option *ngFor="let c of clients" [value]="c.id">
+          {{ c.firstName }} {{ c.lastName }}
+        </option>
+      </select>
     </div>
 
     <div class="modal-actions">

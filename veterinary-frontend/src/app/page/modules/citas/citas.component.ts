@@ -2,8 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AppointmentService, Appointment } from '../../../service/appointment.service';
+import { ClientService } from '../../../service/client.service';
+import { PetService, Pet } from '../../../service/pet.service';
+import { VetService, Veterinarian } from '../../../service/vet.service';
 import { DynamicTableComponent, TableColumn, TableAction } from '../../../componets/dynamic-table/dynamic-table.component';
 import { MatIcon } from '@angular/material/icon';
+import { Client } from '../../../models/client.model';
 
 @Component({
   standalone: true,
@@ -14,7 +18,18 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class CitasComponent implements OnInit {
 
-  constructor(private appointmentService: AppointmentService) { }
+  clients: Client[] = [];
+  allPets: Pet[] = [];
+  vets: Veterinarian[] = [];
+  filteredPets: Pet[] = [];
+  errorMsg: string = '';
+
+  constructor(
+    private appointmentService: AppointmentService,
+    private clientService: ClientService,
+    private petService: PetService,
+    private vetService: VetService
+  ) { }
 
   columns: TableColumn[] = [
     { key: 'id', label: 'ID' },
@@ -79,7 +94,41 @@ export class CitasComponent implements OnInit {
   total = 0;
 
   ngOnInit(): void {
+    this.loadClients();
+    this.loadPets();
+    this.loadVets();
     this.loadAppointments();
+  }
+
+  loadClients(): void {
+    this.clientService.getClients(undefined, undefined, 0, 1000).subscribe(res => {
+      this.clients = res.data;
+    });
+  }
+
+  loadPets(): void {
+    this.petService.getPets(undefined, undefined, undefined, 0, 1000).subscribe(res => {
+      this.allPets = res.data;
+    });
+  }
+
+  loadVets(): void {
+    this.vetService.getVets(undefined, undefined, undefined, 0, 1000).subscribe(res => {
+      this.vets = res.data;
+    });
+  }
+
+  onClientChange(): void {
+    this.filteredPetsByClient();
+  }
+
+  filteredPetsByClient(): void {
+    if (!this.newAppointment.clientId) {
+      this.filteredPets = [];
+      return;
+    }
+    const clientId = Number(this.newAppointment.clientId);
+    this.filteredPets = this.allPets.filter(p => p.ownerId === clientId);
   }
 
   loadAppointments(filters?: any) {
@@ -130,19 +179,62 @@ export class CitasComponent implements OnInit {
     }
   }
   openCreateModal() {
+    this.errorMsg = '';
     this.newAppointment = {
       petId: null,
       clientId: null,
       veterinarianId: null,
       appointmentDate: ''
     };
+    this.filteredPets = [];
     this.showCreateModal = true;
   }
 
   createAppointment() {
+    this.errorMsg = '';
+
+    if (!this.newAppointment.clientId) {
+      this.errorMsg = 'Selecciona un cliente';
+      return;
+    }
+
+    if (!this.newAppointment.petId) {
+      this.errorMsg = 'Selecciona una mascota';
+      return;
+    }
+
+    if (!this.newAppointment.veterinarianId) {
+      this.errorMsg = 'Selecciona un veterinario';
+      return;
+    }
+
+    if (!this.newAppointment.appointmentDate) {
+      this.errorMsg = 'Selecciona una fecha';
+      return;
+    }
+
+    // Convertir valores a números para comparación correcta
+    const petId = Number(this.newAppointment.petId);
+    const clientId = Number(this.newAppointment.clientId);
+    const vetId = Number(this.newAppointment.veterinarianId);
+
+    // Validación: la mascota debe existir
+    const pet = this.allPets.find(p => p.id === petId);
+    if (!pet) {
+      this.errorMsg = 'La mascota no existe';
+      return;
+    }
+
+    // Validación: la mascota debe pertenecer al cliente seleccionado
+    if (pet.ownerId !== clientId) {
+      this.errorMsg = 'La mascota no pertenece a este cliente';
+      return;
+    }
 
     const payload = {
-      ...this.newAppointment,
+      petId: petId,
+      clientId: clientId,
+      veterinarianId: vetId,
       appointmentDate: new Date(this.newAppointment.appointmentDate).toISOString()
     };
 
