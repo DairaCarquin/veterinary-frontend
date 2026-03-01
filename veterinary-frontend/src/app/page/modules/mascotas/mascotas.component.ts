@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { DynamicTableComponent, TableColumn, TableAction } from '../../../componets/dynamic-table/dynamic-table.component';
 import { MatIcon } from '@angular/material/icon';
 import { Pet, PetService } from '../../../service/pet.service';
+import { ClientService } from '../../../service/client.service';
+import { Client } from '../../../models/client.model';
 
 @Component({
   standalone: true,
@@ -14,7 +16,13 @@ import { Pet, PetService } from '../../../service/pet.service';
 })
 export class MascotasComponent implements OnInit {
 
-  constructor(private petService: PetService) {}
+  clients: Client[] = [];
+  errorMsg: string = '';
+
+  constructor(
+    private petService: PetService,
+    private clientService: ClientService
+  ) { }
 
   columns: TableColumn[] = [
     { key: 'id', label: 'ID' },
@@ -22,7 +30,7 @@ export class MascotasComponent implements OnInit {
     { key: 'species', label: 'Especie' },
     { key: 'breed', label: 'Raza' },
     { key: 'age', label: 'Edad' },
-    { key: 'ownerId', label: 'Owner ID' },
+    { key: 'ownerName', label: 'Propietario' },
     { key: 'enabled', label: 'Activo' }
   ];
 
@@ -59,16 +67,31 @@ export class MascotasComponent implements OnInit {
   total = 0;
 
   ngOnInit(): void {
-    this.loadPets();
+    this.loadClients();
+  }
+
+  loadClients(): void {
+    this.clientService.getClients(undefined, undefined, 0, 1000).subscribe(res => {
+      this.clients = res.data;
+      this.loadPets();
+    });
   }
 
   loadPets(filters?: any) {
     this.petService
       .getPets(filters?.name, filters?.species, filters?.ownerId, this.page, this.size)
       .subscribe(res => {
-        this.pets = res.data;
+        this.pets = res.data.map(pet => ({
+          ...pet,
+          ownerName: this.getOwnerName(pet.ownerId)
+        }));
         this.total = res.total;
       });
+  }
+
+  getOwnerName(ownerId: number): string {
+    const client = this.clients.find(c => c.id === ownerId);
+    return client ? `${client.firstName} ${client.lastName}` : 'Desconocido';
   }
 
   onPageChange(newPage: number) {
@@ -113,6 +136,42 @@ export class MascotasComponent implements OnInit {
   }
 
   createPet() {
+    this.errorMsg = '';
+
+    if (!this.selectedPet.name?.trim()) {
+      this.errorMsg = 'Nombre es requerido';
+      return;
+    }
+
+    if (!this.selectedPet.species?.trim()) {
+      this.errorMsg = 'Especie es requerida';
+      return;
+    }
+
+    if (!this.selectedPet.breed?.trim()) {
+      this.errorMsg = 'Raza es requerida';
+      return;
+    }
+
+    if (this.selectedPet.age === null || this.selectedPet.age === undefined || this.selectedPet.age < 0) {
+      this.errorMsg = 'Edad debe ser válida';
+      return;
+    }
+
+    if (!this.selectedPet.ownerId) {
+      this.errorMsg = 'Selecciona un propietario';
+      return;
+    }
+
+    const ownerId = Number(this.selectedPet.ownerId);
+    const ownerExists = this.clients.some(c => c.id === ownerId);
+    if (!ownerExists) {
+      this.errorMsg = 'El propietario no existe';
+      return;
+    }
+
+    this.selectedPet.ownerId = ownerId;
+
     this.petService.create(this.selectedPet)
       .subscribe(() => {
         this.closeModals();
