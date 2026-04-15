@@ -1,0 +1,46 @@
+<section class="role-dashboard">
+  <header class="hero client-hero">
+    <div>
+      <h2>Panel del cliente</h2>
+      <p>Consulta tus mascotas, revisa tus próximas citas y mantén todo en orden.</p>
+    </div>
+  </header>
+
+  <div class="overview">
+    <article class="info-card">
+      <span>Mascotas registradas</span>
+      <strong>{{ pets.length }}</strong>
+    </article>
+    <article class="info-card">
+      <span>Próximas citas</span>
+      <strong>{{ appointments.length }}</strong>
+    </article>
+  </div>
+
+  <div class="content-grid">
+    <section class="panel">
+      <h3>Mis mascotas</h3>
+      <div *ngIf="!pets.length" class="empty-state">Aún no tienes mascotas registradas.</div>
+      <div class="pet-list">
+        <article class="pet-card" *ngFor="let pet of pets | slice:0:6">
+          <strong>{{ pet.name }}</strong>
+          <p>{{ pet.species }} | {{ pet.breed }}</p>
+          <small>Edad: {{ pet.age }} años</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>Mis citas</h3>
+      <div *ngIf="loading" class="empty-state">Cargando citas...</div>
+      <div *ngIf="!appointments.length && !loading" class="empty-state">No tienes citas programadas.</div>
+      <div class="appointment-list">
+        <article class="appointment-card" *ngFor="let appointment of appointments | slice:0:6">
+          <strong>Cita #{{ appointment.id }}</strong>
+          <p>Veterinario: {{ appointment.veterinarianId }}</p>
+          <small>{{ appointment.appointmentDate | date:'medium' }}</small>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>

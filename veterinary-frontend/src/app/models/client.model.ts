@@ -13,7 +13,10 @@ export interface Client {
 }
 
 export interface ApiResponse<T> {
-  status: number;
-  description: string;
+  status?: number;
+  description?: string;
   data: T;
+  total?: number;
+  page?: number;
+  size?: number;
 }

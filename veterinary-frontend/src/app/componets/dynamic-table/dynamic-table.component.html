@@ -1,74 +1,121 @@
-<div class="table-filters" *ngIf="filters.length > 0">
-  <div *ngFor="let f of filters" class="filter-field">
-    <label>{{ f.label }}</label>
-    <input type="text" [(ngModel)]="filterValues[f.key]" [placeholder]="f.placeholder || ''" />
-  </div>
+<div class="filters-shell" *ngIf="filters.length > 0">
+  <div class="filters-title">FILTRAR POR:</div>
 
-  <button class="btn-filter" (click)="applyFilters()">
-    <mat-icon>search</mat-icon>
-  </button>
+  <div class="table-filters">
+    <div *ngFor="let f of filters" class="filter-field">
+      <label>{{ f.label }}</label>
+      <ng-container [ngSwitch]="f.type || 'text'">
+        <select *ngSwitchCase="'select'" [(ngModel)]="filterValues[f.key]">
+          <option value="">{{ f.placeholder || 'Seleccione una opcion' }}</option>
+          <option *ngFor="let option of f.options || []" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <input *ngSwitchDefault type="text" [(ngModel)]="filterValues[f.key]" [placeholder]="f.placeholder || ''" />
+      </ng-container>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn-filter btn-apply" (click)="applyFilters()">
+        <mat-icon>search</mat-icon>
+        <span>Aplicar filtros</span>
+      </button>
+
+      <button class="btn-filter btn-clear" (click)="clearFilters()">
+        <mat-icon>delete</mat-icon>
+        <span>Borrar filtros</span>
+      </button>
+    </div>
+  </div>
 </div>
 
-<table class="custom-table">
-  <thead>
-    <tr>
-      <th *ngFor="let col of columns">
-        {{ col.label }}
-      </th>
-      <th *ngIf="showActions">Actions</th>
-    </tr>
-  </thead>
+<div class="table-wrapper">
+  <table class="custom-table">
+    <thead>
+      <tr>
+        <th *ngFor="let col of columns">
+          <div class="th-content">
+            <span>{{ col.label }}</span>
+          </div>
+        </th>
+        <th *ngIf="showActions">Acciones</th>
+      </tr>
+    </thead>
 
-  <tbody>
-    <tr *ngFor="let row of data">
-      <td *ngFor="let col of columns">
-        {{ row[col.key] }}
-      </td>
+    <tbody>
+      <tr class="table-section-row" *ngIf="data.length > 0">
+        <td [attr.colspan]="columns.length + (showActions ? 1 : 0)">
+          PAGINA {{ page + 1 }}
+        </td>
+      </tr>
 
-      <td *ngIf="showActions" class="actions-cell">
-        <ng-container *ngFor="let action of actions">
-          <button *ngIf="action.visible !== false" class="action-btn"
-            [ngStyle]="{'background-color': action.color || '#f3f4f6'}" (click)="onAction(action.name, row)">
-            <mat-icon [ngStyle]="{'color': action.iconColor || '#111'}">
-              {{ action.icon }}
-            </mat-icon>
-          </button>
-        </ng-container>
-      </td>
-    </tr>
-  </tbody>
-</table>
+      <tr *ngFor="let row of data">
+        <td *ngFor="let col of columns">
+          <ng-container *ngIf="isBadge(row[col.key]); else plainValue">
+            <div class="status-badge" [ngClass]="'badge-' + row[col.key].tone">
+              {{ row[col.key].label }}
+            </div>
+          </ng-container>
+
+          <ng-template #plainValue>
+            {{ row[col.key] }}
+          </ng-template>
+        </td>
+
+        <td *ngIf="showActions" class="actions-cell">
+          <ng-container *ngFor="let action of actions">
+            <button
+              *ngIf="action.visible !== false"
+              class="action-btn"
+              [ngStyle]="{'background-color': action.color || '#f3f4f6'}"
+              (click)="onAction(action.name, row)">
+              <mat-icon [ngStyle]="{'color': action.iconColor || '#111'}">
+                {{ action.icon }}
+              </mat-icon>
+            </button>
+          </ng-container>
+        </td>
+      </tr>
+
+      <tr *ngIf="data.length === 0">
+        <td class="empty-state" [attr.colspan]="columns.length + (showActions ? 1 : 0)">
+          No se encontraron registros para los filtros aplicados.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <div class="table-pagination">
+  <div class="pagination-left">
+    <div class="pagination-size">
+      <label>Elementos por pagina</label>
+      <select [ngModel]="size" (ngModelChange)="changeSize($event)">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="20">20</option>
+        <option [value]="50">50</option>
+      </select>
+    </div>
 
-  <div class="pagination-info">
-    Mostrando {{ data.length }} de {{ total }} registros
+    <div class="pagination-info">{{ total }} resultados</div>
   </div>
 
   <div class="pagination-controls">
-
-    <button (click)="prevPage()" [disabled]="page === 0" class="page-btn">
+    <button (click)="prevPage()" [disabled]="page === 0" class="page-btn icon-btn">
       <mat-icon>chevron_left</mat-icon>
     </button>
 
-    <span class="page-indicator">
-      Página {{ page + 1 }} de {{ totalPages || 1 }}
-    </span>
-
-    <button (click)="nextPage()" [disabled]="page + 1 >= totalPages" class="page-btn">
-      <mat-icon>chevron_right</mat-icon>
+    <button
+      *ngFor="let pageNumber of visiblePages"
+      class="page-number"
+      [class.active]="pageNumber === page + 1"
+      (click)="goToPage(pageNumber)">
+      {{ pageNumber }}
     </button>
 
+    <button (click)="nextPage()" [disabled]="page + 1 >= totalPages" class="page-btn icon-btn">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
   </div>
-
-  <div class="pagination-size">
-    <label>Items por página</label>
-    <select [ngModel]="size" (ngModelChange)="changeSize($event)">
-      <option [value]="5">5</option>
-      <option [value]="10">10</option>
-      <option [value]="20">20</option>
-      <option [value]="50">50</option>
-    </select>
-  </div>
-
 </div>

@@ -1,17 +1,21 @@
 <div class="header-container">
-  <h2>Gestión de Historial Médico</h2>
+  <div>
+    <h2>Gestion de Historial Medico</h2>
+    <p class="section-subtitle">Revisa los casos clinicos con el mismo estilo usado en el resto de la administracion.</p>
+  </div>
 </div>
 
 <app-dynamic-table
   [columns]="columns"
   [data]="cases"
+  [filters]="filters"
   [page]="page"
   [size]="size"
   [total]="total"
   [showActions]="true"
   [actions]="actions"
   (filterChange)="loadCases($event)"
-  (pageChange)="page = $event; loadCases()"
-  (sizeChange)="size = $event; page = 0; loadCases()"
+  (pageChange)="onPageChange($event)"
+  (sizeChange)="onSizeChange($event)"
   (actionClick)="handleAction($event)">
 </app-dynamic-table>

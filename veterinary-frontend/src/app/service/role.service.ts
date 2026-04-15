@@ -22,13 +22,14 @@ export class RoleService {
 
   constructor(private http: HttpClient) { }
 
-  getRoles(name?: string, page = 0, size = 10)
+  getRoles(id?: number, name?: string, page = 0, size = 10)
     : Observable<ApiResponse<Role[]>> {
 
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
 
+    if (id) params = params.set('id', id);
     if (name) params = params.set('name', name);
 
     return this.http.get<ApiResponse<Role[]>>(this.API, { params });

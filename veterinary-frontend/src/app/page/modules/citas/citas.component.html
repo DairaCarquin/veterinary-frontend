@@ -1,39 +1,90 @@
 <div class="header-container">
-  <h2>Gestión de Citas</h2>
+  <div>
+    <h2>Gestion de Citas</h2>
+    <p class="section-subtitle">Coordina agendas, estados y reprogramaciones desde una misma experiencia visual.</p>
+  </div>
 
   <button class="btn-add" (click)="openCreateModal()">
     <mat-icon>add</mat-icon>
   </button>
 </div>
 
-<app-dynamic-table [columns]="columns" [data]="appointments" [filters]="filters" [page]="page" [size]="size"
-  [total]="total" [showActions]="true" [actions]="actions" (filterChange)="loadAppointments($event)"
-  (pageChange)="onPageChange($event)" (sizeChange)="onSizeChange($event)" (actionClick)="handleAction($event)">
+<app-dynamic-table
+  [columns]="columns"
+  [data]="appointments"
+  [filters]="filters"
+  [page]="page"
+  [size]="size"
+  [total]="total"
+  [showActions]="true"
+  [actions]="actions"
+  (filterChange)="loadAppointments($event)"
+  (pageChange)="onPageChange($event)"
+  (sizeChange)="onSizeChange($event)"
+  (actionClick)="handleAction($event)">
 </app-dynamic-table>
 
 <div class="modal-overlay" *ngIf="showCreateModal">
   <div class="modal">
-    <h2>Crear Cita</h2>
-
-    <div class="form-group">
-      <label>Mascota ID</label>
-      <input type="number" [(ngModel)]="newAppointment.petId" />
+    <div class="modal-header">
+      <div>
+        <h2>Crear Cita</h2>
+        <p>Selecciona mascota, cliente y veterinario para registrar una nueva cita.</p>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Cliente ID</label>
-      <input type="number" [(ngModel)]="newAppointment.clientId" />
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Mascota</label>
+        <app-searchable-select
+          [selectedLabel]="selectedPetLabel"
+          [options]="petOptions"
+          [loading]="petLoading"
+          placeholder="Buscar mascota por nombre"
+          emptyMessage="No se encontraron mascotas"
+          (searchChange)="searchPets($event)"
+          (optionSelected)="selectPet($event)"
+          (selectionCleared)="clearPetSelection()">
+        </app-searchable-select>
+        <small class="helper-text">Elige una mascota para completar automaticamente al cliente.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Cliente</label>
+        <input [ngModel]="selectedClientLabel" readonly placeholder="Se completa al elegir la mascota" />
+        <small class="helper-text">Se completa de forma automatica segun la mascota seleccionada.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Veterinario</label>
+        <app-searchable-select
+          [selectedLabel]="selectedVetLabel"
+          [options]="vetOptions"
+          [loading]="vetLoading"
+          placeholder="Buscar veterinario por nombre"
+          emptyMessage="No se encontraron veterinarios"
+          (searchChange)="searchVets($event)"
+          (optionSelected)="selectVet($event)"
+          (selectionCleared)="clearVetSelection()">
+        </app-searchable-select>
+        <small class="helper-text">Busca al veterinario por nombre para evitar cargar listas extensas.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="datetime-local" [(ngModel)]="newAppointment.appointmentDate" />
+      </div>
+
+      <div class="form-group">
+        <label>Motivo</label>
+        <input
+          [(ngModel)]="newAppointment.reason"
+          placeholder="Motivo de la cita" />
+        <small class="helper-text">Describe brevemente la razon de la consulta.</small>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Veterinario ID</label>
-      <input type="number" [(ngModel)]="newAppointment.veterinarianId" />
-    </div>
-
-    <div class="form-group">
-      <label>Fecha</label>
-      <input type="datetime-local" [(ngModel)]="newAppointment.appointmentDate" />
-    </div>
+    <p *ngIf="createError" class="error-banner">{{ createError }}</p>
 
     <div class="modal-actions">
       <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
@@ -44,16 +95,24 @@
 
 <div class="modal-overlay" *ngIf="showStatusModal">
   <div class="modal">
-    <h2>Cambiar Estado</h2>
+    <div class="modal-header">
+      <div>
+        <h2>Cambiar Estado</h2>
+        <p>Actualiza el estado operativo de la cita seleccionada.</p>
+      </div>
+    </div>
 
-    <div class="form-group">
-      <label>Nuevo Estado</label>
-      <select [(ngModel)]="selectedStatus">
-        <option value="RESCHEDULED">RESCHEDULED</option>
-        <option value="ATTENDED">ATTENDED</option>
-        <option value="CANCELLED">CANCELLED</option>
-        <option value="PAID">PAID</option>
-      </select>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nuevo Estado</label>
+        <select [(ngModel)]="selectedStatus">
+          <option value="RESCHEDULED">RESCHEDULED</option>
+          <option value="ATTENDED">ATTENDED</option>
+          <option value="CANCELLED">CANCELLED</option>
+          <option value="PAID">PAID</option>
+        </select>
+        <small class="helper-text">Elige el nuevo estado operativo para la cita seleccionada.</small>
+      </div>
     </div>
 
     <div class="modal-actions">
@@ -65,11 +124,8 @@
 
 <div class="modal-overlay" *ngIf="showConfirmModal">
   <div class="confirm-card">
-
     <div class="confirm-icon">
-      <mat-icon>
-        {{ selectedAppointment?.enabled ? 'warning' : 'check_circle' }}
-      </mat-icon>
+      <mat-icon>{{ selectedAppointment?.enabled ? 'warning' : 'check_circle' }}</mat-icon>
     </div>
 
     <h3>
@@ -78,35 +134,48 @@
 
     <p>
       {{ selectedAppointment?.enabled
-      ? 'La cita dejará de estar disponible en el sistema.'
-      : 'La cita volverá a estar habilitada.' }}
+      ? 'La cita dejara de estar disponible en el sistema.'
+      : 'La cita volvera a estar habilitada.' }}
     </p>
 
     <div class="confirm-actions">
-      <button class="btn-secondary" (click)="closeModals()">
-        Cancelar
-      </button>
-
+      <button class="btn-secondary" (click)="closeModals()">Cancelar</button>
       <button class="btn-danger" (click)="confirmToggle()">
         {{ selectedAppointment?.enabled ? 'Desactivar' : 'Activar' }}
       </button>
     </div>
-
   </div>
 </div>
 
 <div class="modal-overlay" *ngIf="showRescheduleModal">
   <div class="modal">
-    <h2>Reprogramar Cita</h2>
-
-    <div class="form-group">
-      <label>Nueva Fecha</label>
-      <input type="datetime-local" [(ngModel)]="newRescheduleDate" />
+    <div class="modal-header">
+      <div>
+        <h2>Reprogramar Cita</h2>
+        <p>Ajusta la fecha y, si es necesario, reasigna un veterinario.</p>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Nuevo Veterinario (Opcional)</label>
-      <input type="number" [(ngModel)]="newRescheduleVetId" />
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nueva Fecha</label>
+        <input type="datetime-local" [(ngModel)]="newRescheduleDate" />
+      </div>
+
+      <div class="form-group">
+        <label>Nuevo Veterinario (Opcional)</label>
+        <app-searchable-select
+          [selectedLabel]="selectedRescheduleVetLabel"
+          [options]="rescheduleVetOptions"
+          [loading]="rescheduleVetLoading"
+          placeholder="Buscar veterinario por nombre"
+          emptyMessage="No se encontraron veterinarios"
+          (searchChange)="searchRescheduleVets($event)"
+          (optionSelected)="selectRescheduleVet($event)"
+          (selectionCleared)="clearRescheduleVetSelection()">
+        </app-searchable-select>
+        <small class="helper-text">Puedes reasignar el veterinario si la agenda lo requiere.</small>
+      </div>
     </div>
 
     <div class="modal-actions">

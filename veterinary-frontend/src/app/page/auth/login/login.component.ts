@@ -26,24 +26,7 @@ export class LoginComponent {
 
     this.authService.login(this.username, this.password).subscribe({
       next: (response) => {
-        const role = response.data.role;
-
-        switch (role) {
-          case 'ADMIN':
-            this.router.navigate(['/admin']);
-            break;
-
-          case 'CLIENT':
-            this.router.navigate(['/cliente']);
-            break;
-
-          case 'VETERINARY':
-            this.router.navigate(['/veterinario']);
-            break;
-
-          default:
-            this.error = 'Rol no reconocido';
-        }
+        this.router.navigate([this.authService.getDefaultRoute()]);
       },
       error: () => {
         this.error = 'Usuario o contraseña incorrectos';

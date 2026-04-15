@@ -8,6 +8,7 @@ export interface Appointment {
   clientId: number;
   veterinarianId: number;
   appointmentDate: string;
+  reason: string;
   status: string;
   enabled: boolean;
 }

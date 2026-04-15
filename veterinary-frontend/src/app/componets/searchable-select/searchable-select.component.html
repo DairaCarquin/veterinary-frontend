@@ -1,0 +1,30 @@
+<div class="searchable-select" [class.disabled]="disabled" [class.invalid]="invalid">
+  <input
+    type="text"
+    [placeholder]="placeholder"
+    [(ngModel)]="searchTerm"
+    [disabled]="disabled"
+    (focus)="openDropdown()"
+    (ngModelChange)="onSearchTermChange($event)" />
+
+  <div class="options-panel" *ngIf="isOpen">
+    <div class="options-state" *ngIf="loading">Buscando...</div>
+
+    <ng-container *ngIf="!loading">
+      <button
+        type="button"
+        class="option-item"
+        *ngFor="let option of options; trackBy: trackByOption"
+        (click)="selectOption(option)">
+        <span class="option-label">{{ option.label }}</span>
+        <span class="option-description" *ngIf="option.description">
+          {{ option.description }}
+        </span>
+      </button>
+
+      <div class="options-state" *ngIf="options.length === 0">
+        {{ emptyMessage }}
+      </div>
+    </ng-container>
+  </div>
+</div>

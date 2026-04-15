@@ -1,5 +1,8 @@
 <div class="header-container">
-  <h2>Gestión de Mascotas</h2>
+  <div>
+    <h2>Gestion de Mascotas</h2>
+    <p class="section-subtitle">Registra y administra mascotas con una vista consistente en todo el sistema.</p>
+  </div>
 
   <button class="btn-add" (click)="openCreateModal()">
     <mat-icon>add</mat-icon>
@@ -23,76 +26,156 @@
 
 <div class="modal-overlay" *ngIf="showCreateModal">
   <div class="modal">
-    <h2>Registrar Mascota</h2>
-
-    <div class="form-group">
-      <label>Nombre</label>
-      <input [(ngModel)]="selectedPet.name" />
+    <div class="modal-header">
+      <div>
+        <h2>Registrar Mascota</h2>
+        <p>Completa los datos principales de la mascota y asigna su propietario.</p>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Especie</label>
-      <input [(ngModel)]="selectedPet.species" />
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nombre</label>
+        <input
+          [class.input-error]="hasCreateFieldError('name')"
+          [ngModel]="selectedPet.name"
+          (ngModelChange)="onCreateFieldChange('name', $event)"
+          placeholder="Nombre de la mascota" />
+        <small *ngIf="hasCreateFieldError('name')" class="error-text">{{ getCreateFieldError('name') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Especie</label>
+        <input
+          [class.input-error]="hasCreateFieldError('species')"
+          [ngModel]="selectedPet.species"
+          (ngModelChange)="onCreateFieldChange('species', $event)"
+          placeholder="Especie" />
+        <small *ngIf="hasCreateFieldError('species')" class="error-text">{{ getCreateFieldError('species') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Raza</label>
+        <input
+          [class.input-error]="hasCreateFieldError('breed')"
+          [ngModel]="selectedPet.breed"
+          (ngModelChange)="onCreateFieldChange('breed', $event)"
+          placeholder="Raza" />
+        <small *ngIf="hasCreateFieldError('breed')" class="error-text">{{ getCreateFieldError('breed') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Edad</label>
+        <input
+          [class.input-error]="hasCreateFieldError('age')"
+          [ngModel]="selectedPet.age"
+          (ngModelChange)="onCreateFieldChange('age', $event)"
+          placeholder="Edad" />
+        <small *ngIf="hasCreateFieldError('age')" class="error-text">{{ getCreateFieldError('age') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Propietario</label>
+        <app-searchable-select
+          [invalid]="hasCreateFieldError('ownerId')"
+          [selectedLabel]="selectedOwnerLabel"
+          [options]="ownerOptions"
+          [loading]="ownerLoading"
+          placeholder="Buscar cliente por nombre, email o DNI"
+          emptyMessage="No se encontraron clientes"
+          (searchChange)="searchOwners($event)"
+          (optionSelected)="selectOwner($event)"
+          (selectionCleared)="clearOwnerSelection()">
+        </app-searchable-select>
+        <small class="helper-text">Selecciona al propietario usando nombre, correo o DNI.</small>
+        <small *ngIf="hasCreateFieldError('ownerId')" class="error-text">{{ getCreateFieldError('ownerId') }}</small>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Raza</label>
-      <input [(ngModel)]="selectedPet.breed" />
-    </div>
-
-    <div class="form-group">
-      <label>Edad</label>
-      <input type="number" [(ngModel)]="selectedPet.age" />
-    </div>
-
-    <div class="form-group">
-      <label>Owner ID</label>
-      <input type="number" [(ngModel)]="selectedPet.ownerId" />
-    </div>
+    <p *ngIf="createPetError" class="error-banner">{{ createPetError }}</p>
 
     <div class="modal-actions">
       <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
-      <button class="btn-primary" (click)="createPet()">Crear</button>
+      <button class="btn-primary" (click)="createPet()" [disabled]="!canCreatePet()">Crear</button>
     </div>
   </div>
 </div>
 
 <div class="modal-overlay" *ngIf="showEditModal">
   <div class="modal">
-    <h2>Actualizar Mascota</h2>
-
-    <div class="form-group">
-      <label>Nombre</label>
-      <input [(ngModel)]="selectedPet.name" />
+    <div class="modal-header">
+      <div>
+        <h2>Actualizar Mascota</h2>
+        <p>Actualiza la informacion general de la mascota seleccionada.</p>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Especie</label>
-      <input [(ngModel)]="selectedPet.species" />
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nombre</label>
+        <input
+          [class.input-error]="hasEditFieldError('name')"
+          [ngModel]="selectedPet.name"
+          (ngModelChange)="onEditFieldChange('name', $event)"
+          placeholder="Nombre de la mascota" />
+        <small *ngIf="hasEditFieldError('name')" class="error-text">{{ getEditFieldError('name') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Especie</label>
+        <input
+          [class.input-error]="hasEditFieldError('species')"
+          [ngModel]="selectedPet.species"
+          (ngModelChange)="onEditFieldChange('species', $event)"
+          placeholder="Especie" />
+        <small *ngIf="hasEditFieldError('species')" class="error-text">{{ getEditFieldError('species') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Raza</label>
+        <input
+          [class.input-error]="hasEditFieldError('breed')"
+          [ngModel]="selectedPet.breed"
+          (ngModelChange)="onEditFieldChange('breed', $event)"
+          placeholder="Raza" />
+        <small *ngIf="hasEditFieldError('breed')" class="error-text">{{ getEditFieldError('breed') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Edad</label>
+        <input
+          [class.input-error]="hasEditFieldError('age')"
+          [ngModel]="selectedPet.age"
+          (ngModelChange)="onEditFieldChange('age', $event)"
+          placeholder="Edad" />
+        <small *ngIf="hasEditFieldError('age')" class="error-text">{{ getEditFieldError('age') }}</small>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Raza</label>
-      <input [(ngModel)]="selectedPet.breed" />
-    </div>
-
-    <div class="form-group">
-      <label>Edad</label>
-      <input type="number" [(ngModel)]="selectedPet.age" />
-    </div>
+    <p *ngIf="editPetError" class="error-banner">{{ editPetError }}</p>
 
     <div class="modal-actions">
       <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
-      <button class="btn-primary" (click)="updatePet()">Guardar</button>
+      <button class="btn-primary" (click)="updatePet()" [disabled]="!canUpdatePet()">Guardar</button>
     </div>
   </div>
 </div>
 
 <div class="modal-overlay" *ngIf="showConfirmModal">
   <div class="confirm-card">
+    <div class="confirm-icon">
+      <mat-icon>{{ selectedPet?.enabled ? 'warning' : 'check_circle' }}</mat-icon>
+    </div>
+
     <h3>
       {{ selectedPet?.enabled ? 'Desactivar Mascota' : 'Activar Mascota' }}
     </h3>
+
+    <p>
+      {{ selectedPet?.enabled
+      ? 'La mascota dejara de aparecer como activa dentro del sistema.'
+      : 'La mascota volvera a quedar disponible.' }}
+    </p>
 
     <div class="confirm-actions">
       <button class="btn-secondary" (click)="closeModals()">Cancelar</button>

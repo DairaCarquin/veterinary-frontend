@@ -20,6 +20,13 @@ export interface TableFilter {
   key: string;
   label: string;
   placeholder?: string;
+  type?: 'text' | 'select';
+  options?: Array<{ value: string | number; label: string }>;
+}
+
+export interface TableBadge {
+  label: string;
+  tone: 'success' | 'danger' | 'warning' | 'info' | 'neutral';
 }
 
 @Component({
@@ -33,13 +40,13 @@ export class DynamicTableComponent {
 
   @Input() columns: TableColumn[] = [];
   @Input() data: any[] = [];
-  @Input() showActions: boolean = false;
+  @Input() showActions = false;
   @Input() actions: TableAction[] = [];
 
   @Input() filters: TableFilter[] = [];
-  @Input() total: number = 0;
-  @Input() page: number = 0;
-  @Input() size: number = 10;
+  @Input() total = 0;
+  @Input() page = 0;
+  @Input() size = 10;
 
   @Output() actionClick = new EventEmitter<{ action: string, row: any }>();
   @Output() filterChange = new EventEmitter<any>();
@@ -53,12 +60,33 @@ export class DynamicTableComponent {
   }
 
   applyFilters() {
-    this.pageChange.emit(0);
-    this.filterChange.emit(this.filterValues);
+    this.filterChange.emit({ ...this.filterValues });
+
+    if (this.page !== 0) {
+      this.pageChange.emit(0);
+    }
+  }
+
+  clearFilters() {
+    this.filterValues = {};
+    this.filterChange.emit({});
+
+    if (this.page !== 0) {
+      this.pageChange.emit(0);
+    }
   }
 
   get totalPages(): number {
-    return Math.ceil(this.total / this.size);
+    return Math.max(1, Math.ceil(this.total / this.size));
+  }
+
+  get visiblePages(): number[] {
+    const current = this.page + 1;
+    const start = Math.max(1, current - 1);
+    const end = Math.min(this.totalPages, start + 2);
+    const adjustedStart = Math.max(1, end - 2);
+
+    return Array.from({ length: end - adjustedStart + 1 }, (_, index) => adjustedStart + index);
   }
 
   nextPage() {
@@ -73,9 +101,19 @@ export class DynamicTableComponent {
     }
   }
 
+  goToPage(pageNumber: number) {
+    this.pageChange.emit(pageNumber - 1);
+  }
+
   changeSize(newSize: number) {
     this.sizeChange.emit(Number(newSize));
     this.pageChange.emit(0);
   }
 
+  isBadge(value: unknown): value is TableBadge {
+    return !!value
+      && typeof value === 'object'
+      && 'label' in value
+      && 'tone' in value;
+  }
 }

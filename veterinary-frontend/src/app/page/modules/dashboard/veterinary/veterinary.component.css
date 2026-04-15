@@ -1,0 +1,75 @@
+.role-dashboard {
+  display: grid;
+  gap: 24px;
+}
+
+.hero,
+.panel {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+}
+
+.hero h2,
+.panel h3 {
+  margin: 0 0 8px;
+  color: #1f2937;
+}
+
+.hero p,
+.panel-header span,
+.appointment-card p,
+.appointment-card small {
+  color: #6b7280;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.stat-card,
+.appointment-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.stat-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+}
+
+.stat-card strong {
+  font-size: 28px;
+  color: #0f172a;
+}
+
+.panel-header,
+.appointment-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.appointment-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.status {
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.empty-state {
+  padding: 24px 0 0;
+  color: #94a3b8;
+}

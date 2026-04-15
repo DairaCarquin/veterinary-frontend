@@ -1,63 +1,109 @@
-<div>
-  <h2>Gestión de Clientes</h2>
-
-  <app-dynamic-table
-    [columns]="columns"
-    [data]="clients"
-    [filters]="filters"
-    [page]="page"
-    [size]="size"
-    [total]="total"
-    [showActions]="true"
-    [actions]="actions"
-    (filterChange)="loadClients($event)"
-    (pageChange)="onPageChange($event)"
-    (sizeChange)="onSizeChange($event)"
-    (actionClick)="handleAction($event)">
-  </app-dynamic-table>
+<div class="header-container">
+  <div>
+    <h2>Gestion de Clientes</h2>
+    <p class="section-subtitle">Consulta y completa la informacion de los clientes con una interfaz unificada.</p>
+  </div>
 </div>
+
+<app-dynamic-table
+  [columns]="columns"
+  [data]="clients"
+  [filters]="filters"
+  [page]="page"
+  [size]="size"
+  [total]="total"
+  [showActions]="true"
+  [actions]="actions"
+  (filterChange)="loadClients($event)"
+  (pageChange)="onPageChange($event)"
+  (sizeChange)="onSizeChange($event)"
+  (actionClick)="handleAction($event)">
+</app-dynamic-table>
 
 <div class="modal-overlay" *ngIf="showEditModal">
   <div class="modal">
-
-    <h2>Actualizar Cliente</h2>
-
-    <div class="form-group">
-      <label>Nombre</label>
-      <input [(ngModel)]="selectedClient.firstName" />
+    <div class="modal-header">
+      <div>
+        <h2>Actualizar Cliente</h2>
+        <p>Completa o corrige los datos del cliente respetando las validaciones del sistema.</p>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Apellido</label>
-      <input [(ngModel)]="selectedClient.lastName" />
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nombre</label>
+        <input
+          [class.input-error]="getUpdateFieldError('firstName')"
+          [ngModel]="selectedClient.firstName"
+          (ngModelChange)="onClientNameChange('firstName', $event)"
+          [readonly]="!canEditField('firstName')"
+          placeholder="Nombre" />
+        <small *ngIf="getUpdateFieldError('firstName')" class="error-text">{{ getUpdateFieldError('firstName') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Apellido</label>
+        <input
+          [class.input-error]="getUpdateFieldError('lastName')"
+          [ngModel]="selectedClient.lastName"
+          (ngModelChange)="onClientNameChange('lastName', $event)"
+          [readonly]="!canEditField('lastName')"
+          placeholder="Apellido" />
+        <small *ngIf="getUpdateFieldError('lastName')" class="error-text">{{ getUpdateFieldError('lastName') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>DNI</label>
+        <input
+          [class.input-error]="getUpdateFieldError('dni')"
+          [ngModel]="selectedClient.dni"
+          (ngModelChange)="onClientDigitsChange('dni', $event, 8)"
+          [readonly]="!canEditField('dni')"
+          maxlength="8"
+          inputmode="numeric"
+          placeholder="8 digitos" />
+        <small class="helper-text">Solo numeros, maximo 8 digitos.</small>
+        <small *ngIf="getUpdateFieldError('dni')" class="error-text">{{ getUpdateFieldError('dni') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input
+          [class.input-error]="getUpdateFieldError('email')"
+          [ngModel]="selectedClient.email"
+          (ngModelChange)="onClientEmailChange($event)"
+          [readonly]="!canEditField('email')"
+          placeholder="usuario@masterdog.com" />
+        <small class="helper-text">Debe usar el dominio &#64;masterdog.com.</small>
+        <small *ngIf="getUpdateFieldError('email')" class="error-text">{{ getUpdateFieldError('email') }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Telefono</label>
+        <input
+          [class.input-error]="getUpdateFieldError('phone')"
+          [ngModel]="selectedClient.phone"
+          (ngModelChange)="onClientDigitsChange('phone', $event, 9)"
+          [readonly]="!canEditField('phone')"
+          maxlength="9"
+          inputmode="numeric"
+          placeholder="9 digitos" />
+        <small class="helper-text">Solo numeros, maximo 9 digitos.</small>
+        <small *ngIf="getUpdateFieldError('phone')" class="error-text">{{ getUpdateFieldError('phone') }}</small>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Dni</label>
-      <input [(ngModel)]="selectedClient.dni" />
-    </div>
-
-    <div class="form-group">
-      <label>Email</label>
-      <input [(ngModel)]="selectedClient.email" />
-    </div>
-
-    <div class="form-group">
-      <label>Teléfono</label>
-      <input [(ngModel)]="selectedClient.phone" />
-    </div>
+    <p *ngIf="updateError" class="error-banner">{{ updateError }}</p>
 
     <div class="modal-actions">
       <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
-      <button class="btn-primary" (click)="updateClient()">Guardar</button>
+      <button class="btn-primary" (click)="updateClient()" [disabled]="!canUpdateClient()">Guardar</button>
     </div>
-
   </div>
 </div>
 
 <div class="modal-overlay" *ngIf="showConfirmModal">
   <div class="confirm-card">
-
     <div class="confirm-icon">
       <mat-icon>
         {{ selectedClient?.enabled ? 'warning' : 'check_circle' }}
@@ -70,8 +116,8 @@
 
     <p>
       {{ selectedClient?.enabled
-          ? 'El cliente dejará de tener acceso al sistema.'
-          : 'El cliente volverá a estar habilitado.' }}
+          ? 'El cliente dejara de tener acceso al sistema.'
+          : 'El cliente volvera a estar habilitado.' }}
     </p>
 
     <div class="confirm-actions">
@@ -85,6 +131,5 @@
         {{ selectedClient?.enabled ? 'Desactivar' : 'Activar' }}
       </button>
     </div>
-
   </div>
 </div>

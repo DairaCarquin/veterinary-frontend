@@ -9,7 +9,7 @@ export class ClientService {
 
   constructor(private http: HttpClient) {}
 
-  getClients(name?: string, dni?: string, page = 0, size = 10)
+  getClients(name?: string, dni?: string, email?: string, page = 0, size = 10)
     : Observable<ApiResponse<Client[]>> {
 
     let params = new HttpParams()
@@ -18,12 +18,17 @@ export class ClientService {
 
     if (name) params = params.set('name', name);
     if (dni) params = params.set('dni', dni);
+    if (email) params = params.set('email', email);
 
     return this.http.get<ApiResponse<Client[]>>(this.API, { params });
   }
 
   count(): Observable<ApiResponse<number>> {
     return this.http.get<ApiResponse<number>>(`${this.API}/count`);
+  }
+
+  getById(id: number): Observable<ApiResponse<Client>> {
+    return this.http.get<ApiResponse<Client>>(`${this.API}/${id}`);
   }
 
   update(id: number, client: Partial<Client>)

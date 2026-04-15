@@ -1,5 +1,9 @@
 <div class="header-container">
-  <h2>{{ type | uppercase }} - Caso {{ caseId }}</h2>
+  <div>
+    <div class="eyebrow" [ngClass]="currentMeta.accent">Caso {{ caseId }}</div>
+    <h2>{{ currentMeta.title }}</h2>
+    <p class="section-subtitle">{{ currentMeta.subtitle }}</p>
+  </div>
 
   <button class="btn-add" (click)="openCreateModal()">
     <mat-icon>add</mat-icon>
@@ -19,13 +23,22 @@
 
 <div class="modal-overlay" *ngIf="showCreateModal || showEditModal">
   <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="eyebrow" [ngClass]="currentMeta.accent">Caso {{ caseId }}</div>
+        <h2>{{ getModalTitle() }}</h2>
+        <p>{{ currentMeta.subtitle }}</p>
+      </div>
+    </div>
 
-    <h2>{{ selectedItem?.id ? 'Actualizar' : 'Crear' }}</h2>
-
-    <div *ngFor="let col of columns">
-      <div *ngIf="col.key !== 'id' && col.key !== 'createdAt'">
+    <div class="form-grid">
+      <div class="form-group" *ngFor="let col of visibleColumns">
         <label>{{ col.label }}</label>
-        <input [(ngModel)]="selectedItem[col.key]" />
+        <textarea
+          [(ngModel)]="selectedItem[col.key]"
+          [placeholder]="getFieldPlaceholder(col.key)"
+          rows="4"></textarea>
+        <small class="helper-text">Completa {{ col.label.toLowerCase() }} con informacion breve y clara.</small>
       </div>
     </div>
 

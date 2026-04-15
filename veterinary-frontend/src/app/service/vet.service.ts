@@ -5,10 +5,14 @@ import { Observable } from 'rxjs';
 export interface Veterinarian {
   id: number;
   userId: number;
+  username: string;
   name: string;
+  lastName: string;
+  dni: string;
   specialty: string;
   licenseNumber: string;
   email: string;
+  phone: string;
   available: boolean;
   enabled: boolean;
 }
@@ -41,7 +45,7 @@ export class VetService {
     return this.http.get<ApiResponse<Veterinarian[]>>(this.API, { params });
   }
 
-  update(userId: number, payload: any) {
+  update(userId: number, payload: Partial<Veterinarian>) {
     return this.http.put<Veterinarian>(`${this.API}/${userId}`, payload);
   }
 

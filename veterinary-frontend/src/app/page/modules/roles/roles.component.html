@@ -1,5 +1,8 @@
 <div class="header-container">
-  <h2>Gestión de Roles</h2>
+  <div>
+    <h2>Gestion de Roles</h2>
+    <p class="section-subtitle">Configura los roles del sistema con la misma experiencia visual del panel.</p>
+  </div>
 
   <button class="btn-add" (click)="openCreateModal()">
     <mat-icon>add</mat-icon>
@@ -23,42 +26,77 @@
 
 <div class="modal-overlay" *ngIf="showCreateModal">
   <div class="modal">
-    <h2>Crear Rol</h2>
+    <div class="modal-header">
+      <div>
+        <h2>Crear Rol</h2>
+        <p>Define nuevos perfiles manteniendo la estructura del sistema.</p>
+      </div>
+    </div>
 
-    <div class="form-group">
-      <label>Nombre</label>
-      <input [(ngModel)]="selectedRole.name" />
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nombre</label>
+        <input
+          [class.input-error]="hasCreateNameError()"
+          [ngModel]="selectedRole.name"
+          (ngModelChange)="onCreateNameChange($event)"
+          placeholder="Nombre del rol" />
+        <small class="helper-text">Usa una denominacion clara y consistente para el sistema.</small>
+        <small *ngIf="hasCreateNameError()" class="error-text">{{ createRoleError || 'El nombre del rol es invalido.' }}</small>
+      </div>
     </div>
 
     <div class="modal-actions">
       <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
-      <button class="btn-primary" (click)="createRole()">Crear</button>
+      <button class="btn-primary" (click)="createRole()" [disabled]="!canCreateRole()">Crear</button>
     </div>
   </div>
 </div>
 
 <div class="modal-overlay" *ngIf="showEditModal">
   <div class="modal">
-    <h2>Actualizar Rol</h2>
+    <div class="modal-header">
+      <div>
+        <h2>Actualizar Rol</h2>
+        <p>Modifica el nombre del rol conservando la misma interfaz del modulo.</p>
+      </div>
+    </div>
 
-    <div class="form-group">
-      <label>Nombre</label>
-      <input [(ngModel)]="selectedRole.name" />
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nombre</label>
+        <input
+          [class.input-error]="hasEditNameError()"
+          [ngModel]="selectedRole.name"
+          (ngModelChange)="onEditNameChange($event)"
+          placeholder="Nombre del rol" />
+        <small class="helper-text">Mantiene el formato institucional para evitar duplicidades.</small>
+        <small *ngIf="hasEditNameError()" class="error-text">{{ editRoleError || 'El nombre del rol es invalido.' }}</small>
+      </div>
     </div>
 
     <div class="modal-actions">
       <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
-      <button class="btn-primary" (click)="updateRole()">Guardar</button>
+      <button class="btn-primary" (click)="updateRole()" [disabled]="!canUpdateRole()">Guardar</button>
     </div>
   </div>
 </div>
 
 <div class="modal-overlay" *ngIf="showConfirmModal">
   <div class="confirm-card">
+    <div class="confirm-icon">
+      <mat-icon>{{ selectedRole?.enabled ? 'warning' : 'check_circle' }}</mat-icon>
+    </div>
 
     <h3>
       {{ selectedRole?.enabled ? 'Desactivar Rol' : 'Activar Rol' }}
     </h3>
+
+    <p>
+      {{ selectedRole?.enabled
+      ? 'El rol dejara de estar disponible para nuevas asignaciones.'
+      : 'El rol volvera a estar disponible dentro del sistema.' }}
+    </p>
 
     <div class="confirm-actions">
       <button class="btn-secondary" (click)="closeModals()">Cancelar</button>
@@ -66,6 +104,5 @@
         {{ selectedRole?.enabled ? 'Desactivar' : 'Activar' }}
       </button>
     </div>
-
   </div>
 </div>

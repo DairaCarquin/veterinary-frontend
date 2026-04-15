@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiResponse, User } from './models/user.model';
+import { ApiResponse, RegisterUserPayload, User } from './models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -45,7 +45,7 @@ export class UserService {
     );
   }
 
-  register(payload: any) {
+  register(payload: RegisterUserPayload) {
     return this.http.post(`${this.API}/register`, payload);
   }
 }

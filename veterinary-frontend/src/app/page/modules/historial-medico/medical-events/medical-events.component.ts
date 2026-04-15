@@ -10,7 +10,8 @@ import { MedicalHistoryService } from '../../../../service/medical-history.servi
   standalone: true,
   selector: 'app-medical-events',
   imports: [CommonModule, FormsModule, DynamicTableComponent, MatIcon],
-  templateUrl: './medical-events.component.html'
+  templateUrl: './medical-events.component.html',
+  styleUrls: ['./medical-events.component.css']
 })
 export class MedicalEventsComponent implements OnInit {
 
@@ -35,6 +36,29 @@ export class MedicalEventsComponent implements OnInit {
   actions: TableAction[] = [
     { name: 'edit', icon: 'edit', color: '#dbeafe', iconColor: '#2563eb' }
   ];
+
+  readonly eventMeta: Record<string, { title: string; subtitle: string; accent: string }> = {
+    analysis: {
+      title: 'Analisis',
+      subtitle: 'Organiza hallazgos, resultados y notas de seguimiento del caso.',
+      accent: 'accent-analysis'
+    },
+    diagnosis: {
+      title: 'Diagnostico',
+      subtitle: 'Documenta la interpretacion clinica con observaciones claras.',
+      accent: 'accent-diagnosis'
+    },
+    referral: {
+      title: 'Referido',
+      subtitle: 'Registra derivaciones, motivos y destino del paciente.',
+      accent: 'accent-referral'
+    },
+    treatment: {
+      title: 'Tratamiento',
+      subtitle: 'Define planes terapeuticos e indicaciones de forma ordenada.',
+      accent: 'accent-treatment'
+    }
+  };
 
   ngOnInit() {
     this.caseId = Number(this.route.snapshot.paramMap.get('id'));
@@ -137,5 +161,36 @@ export class MedicalEventsComponent implements OnInit {
       createMap[this.type](this.selectedItem)
         .subscribe(() => { this.closeModals(); this.loadData(); });
     }
+  }
+
+  get currentMeta() {
+    return this.eventMeta[this.type] ?? {
+      title: 'Detalle',
+      subtitle: 'Gestiona la informacion relacionada con este caso.',
+      accent: 'accent-analysis'
+    };
+  }
+
+  get visibleColumns(): TableColumn[] {
+    return this.columns.filter(col => col.key !== 'id' && col.key !== 'createdAt');
+  }
+
+  getModalTitle(): string {
+    return `${this.selectedItem?.id ? 'Actualizar' : 'Crear'} ${this.currentMeta.title}`;
+  }
+
+  getFieldPlaceholder(key: string): string {
+    const placeholders: Record<string, string> = {
+      description: 'Describe el analisis realizado',
+      result: 'Resume el resultado obtenido',
+      diagnosis: 'Ingresa el diagnostico',
+      observations: 'Anota observaciones clinicas',
+      referredTo: 'Especialista o centro de destino',
+      reason: 'Motivo del referido',
+      treatment: 'Describe el tratamiento',
+      indications: 'Indica pauta, dosis o recomendaciones'
+    };
+
+    return placeholders[key] ?? 'Completa este campo';
   }
 }

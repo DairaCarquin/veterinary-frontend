@@ -2,13 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
+export type UserRole = 'ADMIN' | 'CLIENT' | 'VETERINARY';
+
 export interface LoginResponse {
   status: number;
   description: string;
   data: {
     id: number;
     username: string;
-    role: string;
+    role: UserRole;
     accessToken: string;
     refreshToken: string;
   };
@@ -47,11 +49,11 @@ export class AuthService {
   }
 
   isVeterinario(): boolean {
-    return this.getRole() === 'VETERINARIO';
+    return this.getRole() === 'VETERINARY';
   }
 
   isCliente(): boolean {
-    return this.getRole() === 'CLIENTE';
+    return this.getRole() === 'CLIENT';
   }
 
   logout(): void {
@@ -59,7 +61,7 @@ export class AuthService {
   }
 
   getCurrentUserId(): number | null {
-    const raw = localStorage.getItem('userId');
+    const raw = localStorage.getItem(this.STORAGE_USER_ID);
     if (!raw) return null;
 
     const parsed = Number(raw);
@@ -67,11 +69,30 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem(this.STORAGE_ACCESS);
     return !!token && token.split('.').length === 3;
   }
 
-  getRole(): string | null {
-    return localStorage.getItem(this.STORAGE_ROLE);
+  getRole(): UserRole | null {
+    const role = localStorage.getItem(this.STORAGE_ROLE);
+    if (role === 'ADMIN' || role === 'CLIENT' || role === 'VETERINARY') {
+      return role;
+    }
+    return null;
+  }
+
+  getDefaultRoute(): string {
+    const role = this.getRole();
+
+    switch (role) {
+      case 'ADMIN':
+        return '/admin';
+      case 'VETERINARY':
+        return '/veterinario';
+      case 'CLIENT':
+        return '/cliente';
+      default:
+        return '/login';
+    }
   }
 }

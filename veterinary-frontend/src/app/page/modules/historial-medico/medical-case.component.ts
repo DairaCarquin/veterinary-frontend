@@ -44,16 +44,35 @@ export class MedicalCaseComponent implements OnInit {
   page = 0;
   size = 10;
   total = 0;
+  currentFilters: any = {};
+
+  filters = [
+    { key: 'appointmentId', label: 'Cita', placeholder: 'Buscar por cita' },
+    { key: 'petId', label: 'Mascota', placeholder: 'Buscar por mascota' },
+    { key: 'veterinarianId', label: 'Veterinario', placeholder: 'Buscar por veterinario' }
+  ];
 
   ngOnInit() { this.loadCases(); }
 
   loadCases(filters?: any) {
+    this.currentFilters = filters ?? this.currentFilters;
     this.medicalService
-      .getMedicalCases(filters?.appointmentId, filters?.petId, filters?.veterinarianId, this.page, this.size)
+      .getMedicalCases(this.currentFilters?.appointmentId, this.currentFilters?.petId, this.currentFilters?.veterinarianId, this.page, this.size)
       .subscribe(res => {
         this.cases = res.data;
         this.total = res.total;
       });
+  }
+
+  onPageChange(newPage: number) {
+    this.page = newPage;
+    this.loadCases(this.currentFilters);
+  }
+
+  onSizeChange(newSize: number) {
+    this.size = newSize;
+    this.page = 0;
+    this.loadCases(this.currentFilters);
   }
 
   handleAction(event: any) {
