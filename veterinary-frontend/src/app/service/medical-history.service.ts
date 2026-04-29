@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from './api.config';
 
 export interface ApiResponse<T> {
   data: T;
@@ -61,7 +62,7 @@ export interface Treatment {
 @Injectable({ providedIn: 'root' })
 export class MedicalHistoryService {
 
-  private API = 'http://localhost:8090/medical-history-service/medical-events';
+  private API = `${API_BASE_URL}/medical-history-service/medical-events`;
 
   constructor(private http: HttpClient) { }
 

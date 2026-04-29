@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from './api.config';
 
 export interface Pet {
   id: number;
@@ -22,7 +23,7 @@ export interface ApiResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class PetService {
 
-  private API = 'http://localhost:8090/pet-service/pets';
+  private API = `${API_BASE_URL}/pet-service/pets`;
 
   constructor(private http: HttpClient) { }
 

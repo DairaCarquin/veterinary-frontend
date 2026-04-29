@@ -209,6 +209,16 @@ tbody tr:hover {
   transform: scale(1.04);
 }
 
+.action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.action-btn:disabled:hover {
+  transform: none;
+}
+
 .empty-state {
   text-align: center;
   color: #6b7280;

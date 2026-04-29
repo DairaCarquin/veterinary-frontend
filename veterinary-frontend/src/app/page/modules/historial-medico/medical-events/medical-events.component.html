@@ -5,7 +5,7 @@
     <p class="section-subtitle">{{ currentMeta.subtitle }}</p>
   </div>
 
-  <button class="btn-add" (click)="openCreateModal()">
+  <button class="btn-add" *ngIf="canEdit" (click)="openCreateModal()">
     <mat-icon>add</mat-icon>
   </button>
 </div>
@@ -16,12 +16,12 @@
   [page]="page"
   [size]="size"
   [total]="total"
-  [showActions]="true"
+  [showActions]="canEdit"
   [actions]="actions"
   (actionClick)="handleAction($event)">
 </app-dynamic-table>
 
-<div class="modal-overlay" *ngIf="showCreateModal || showEditModal">
+<div class="modal-overlay" *ngIf="canEdit && (showCreateModal || showEditModal)">
   <div class="modal">
     <div class="modal-header">
       <div>
@@ -36,16 +36,35 @@
         <label>{{ col.label }}</label>
         <textarea
           [(ngModel)]="selectedItem[col.key]"
+          [class.input-error]="hasFieldError(col.key)"
           [placeholder]="getFieldPlaceholder(col.key)"
           rows="4"></textarea>
         <small class="helper-text">Completa {{ col.label.toLowerCase() }} con informacion breve y clara.</small>
+        <small *ngIf="hasFieldError(col.key)" class="error-text">{{ getFieldError(col.key) }}</small>
       </div>
     </div>
+
+    <p *ngIf="formError" class="error-banner">Completa todos los campos obligatorios antes de guardar.</p>
 
     <div class="modal-actions">
       <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
       <button class="btn-primary" (click)="save()">Guardar</button>
     </div>
 
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="canEdit && showErrorPopup">
+  <div class="alert-card">
+    <div class="alert-icon">
+      <mat-icon>error</mat-icon>
+    </div>
+
+    <h3>{{ errorPopupTitle }}</h3>
+    <p>{{ errorPopupMessage }}</p>
+
+    <div class="confirm-actions">
+      <button class="btn-primary" (click)="closeErrorPopup()">Entendido</button>
+    </div>
   </div>
 </div>

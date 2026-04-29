@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from './api.config';
 
 export interface Appointment {
   id: number;
@@ -23,7 +24,7 @@ export interface ApiResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class AppointmentService {
 
-  private API = 'http://localhost:8090/appointment-service/appointments';
+  private API = `${API_BASE_URL}/appointment-service/appointments`;
 
   constructor(private http: HttpClient) { }
 

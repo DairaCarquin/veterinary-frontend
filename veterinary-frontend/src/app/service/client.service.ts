@@ -2,10 +2,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse, Client } from '../models/client.model';
+import { API_BASE_URL } from './api.config';
 
 @Injectable({ providedIn: 'root' })
 export class ClientService {
-  private API = 'http://localhost:8090/client-service/clients';
+  private API = `${API_BASE_URL}/client-service/clients`;
 
   constructor(private http: HttpClient) {}
 

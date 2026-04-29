@@ -4,72 +4,244 @@
 }
 
 .hero,
-.panel {
+.panel,
+.stat-card,
+.history-card,
+.appointment-card {
   background: #fff;
-  border-radius: 20px;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+}
+
+.hero,
+.panel {
   padding: 24px;
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  background: linear-gradient(135deg, #eff6ff 0%, #ecfeff 55%, #f8fafc 100%);
+}
+
+.eyebrow {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .hero h2,
 .panel h3 {
-  margin: 0 0 8px;
-  color: #1f2937;
+  margin: 10px 0 8px;
+  color: #0f172a;
 }
 
 .hero p,
-.panel-header span,
+.panel p,
 .appointment-card p,
-.appointment-card small {
-  color: #6b7280;
+.appointment-card small,
+.history-card p,
+.history-card small,
+.empty-state {
+  color: #64748b;
 }
 
-.stats {
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-btn,
+.text-link {
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.hero-btn {
+  padding: 12px 16px;
+  border-radius: 14px;
+}
+
+.hero-btn.primary {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+}
+
+.hero-btn.secondary {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.stats,
+.content-grid,
+.history-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
 }
 
-.stat-card,
-.appointment-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
-  border-radius: 18px;
+.stats {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.content-grid {
+  grid-template-columns: 1.2fr 1fr;
+}
+
+.stat-card {
   padding: 18px;
+  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
 }
 
 .stat-card span {
   display: block;
-  margin-bottom: 8px;
   color: #64748b;
+  margin-bottom: 8px;
 }
 
 .stat-card strong {
-  font-size: 28px;
+  font-size: 30px;
   color: #0f172a;
 }
 
 .panel-header,
+.month-switcher,
 .appointment-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+}
+
+.month-switcher button {
+  border: none;
+  background: #e2e8f0;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.weekday-row,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.weekday-row {
+  margin: 18px 0 12px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.calendar-cell {
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 18px;
+  min-height: 86px;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.calendar-cell.selected {
+  border-color: #2563eb;
+  background: #dbeafe;
+}
+
+.calendar-cell.today {
+  box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18);
+}
+
+.calendar-cell.other-month {
+  opacity: 0.45;
+}
+
+.calendar-cell .day-number {
+  display: block;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.calendar-cell small {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.filter-field input {
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.appointment-list,
+.history-grid {
+  margin-top: 16px;
 }
 
 .appointment-list {
   display: grid;
-  gap: 14px;
-  margin-top: 16px;
+  gap: 12px;
 }
 
-.status {
+.appointment-card,
+.history-card {
+  padding: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.status-chip {
   background: #dbeafe;
   color: #1d4ed8;
-  padding: 4px 10px;
   border-radius: 999px;
+  padding: 4px 10px;
   font-size: 12px;
+  font-weight: 700;
 }
 
-.empty-state {
-  padding: 24px 0 0;
-  color: #94a3b8;
+.text-link {
+  color: #2563eb;
+}
+
+@media (max-width: 900px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    flex-direction: column;
+  }
 }

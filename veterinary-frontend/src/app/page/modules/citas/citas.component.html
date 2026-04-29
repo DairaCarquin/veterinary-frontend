@@ -1,7 +1,7 @@
 <div class="header-container">
   <div>
     <h2>Gestion de Citas</h2>
-    <p class="section-subtitle">Coordina agendas, estados y reprogramaciones desde una misma experiencia visual.</p>
+    <p class="section-subtitle">Coordina agendas, inicio de consulta, estados y reprogramaciones desde una misma experiencia visual.</p>
   </div>
 
   <button class="btn-add" (click)="openCreateModal()">
@@ -16,7 +16,7 @@
   [page]="page"
   [size]="size"
   [total]="total"
-  [showActions]="true"
+  [showActions]="canShowActions"
   [actions]="actions"
   (filterChange)="loadAppointments($event)"
   (pageChange)="onPageChange($event)"
@@ -29,7 +29,7 @@
     <div class="modal-header">
       <div>
         <h2>Crear Cita</h2>
-        <p>Selecciona mascota, cliente y veterinario para registrar una nueva cita.</p>
+        <p>Selecciona mascota, cliente y veterinario para registrar una nueva cita en estado pendiente.</p>
       </div>
     </div>
 
@@ -75,7 +75,7 @@
         <input type="datetime-local" [(ngModel)]="newAppointment.appointmentDate" />
       </div>
 
-      <div class="form-group">
+      <div class="form-group full-width">
         <label>Motivo</label>
         <input
           [(ngModel)]="newAppointment.reason"
@@ -98,7 +98,7 @@
     <div class="modal-header">
       <div>
         <h2>Cambiar Estado</h2>
-        <p>Actualiza el estado operativo de la cita seleccionada.</p>
+        <p>Aplica solo las transiciones permitidas para la cita seleccionada.</p>
       </div>
     </div>
 
@@ -106,14 +106,13 @@
       <div class="form-group">
         <label>Nuevo Estado</label>
         <select [(ngModel)]="selectedStatus">
-          <option value="RESCHEDULED">RESCHEDULED</option>
-          <option value="ATTENDED">ATTENDED</option>
-          <option value="CANCELLED">CANCELLED</option>
-          <option value="PAID">PAID</option>
+          <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
         </select>
-        <small class="helper-text">Elige el nuevo estado operativo para la cita seleccionada.</small>
+        <small class="helper-text">El sistema solo muestra los estados validos para la etapa actual de la cita.</small>
       </div>
     </div>
+
+    <p *ngIf="statusError" class="error-banner">{{ statusError }}</p>
 
     <div class="modal-actions">
       <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
@@ -152,7 +151,7 @@
     <div class="modal-header">
       <div>
         <h2>Reprogramar Cita</h2>
-        <p>Ajusta la fecha y, si es necesario, reasigna un veterinario.</p>
+        <p>Ajusta la fecha y, si es necesario, reasigna un veterinario respetando la disponibilidad real.</p>
       </div>
     </div>
 
@@ -178,11 +177,48 @@
       </div>
     </div>
 
+    <p *ngIf="rescheduleError" class="error-banner">{{ rescheduleError }}</p>
+
     <div class="modal-actions">
       <button class="btn-cancel" (click)="closeModals()">Cancelar</button>
       <button class="btn-primary" (click)="confirmReschedule()">
         Reprogramar
       </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showStartPrompt">
+  <div class="alert-card">
+    <div class="alert-icon info-icon">
+      <mat-icon>schedule</mat-icon>
+    </div>
+
+    <h3>Inicio de cita</h3>
+    <p *ngIf="dueAppointment">
+      La cita #{{ dueAppointment.id }} ya puede comenzar. Fecha: {{ dueAppointment.appointmentDateDisplay }}.
+    </p>
+
+    <div class="stacked-actions">
+      <button class="btn-primary" (click)="startDueAppointment()">Iniciar</button>
+      <button class="btn-secondary" (click)="snoozeDueAppointment()">Reprogramar 5 minutos</button>
+      <button class="btn-cancel" (click)="openCustomRescheduleFromPrompt()">Elegir otra fecha u hora</button>
+      <button class="btn-link" (click)="closeStartPrompt()">Ver luego</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showErrorPopup">
+  <div class="alert-card">
+    <div class="alert-icon">
+      <mat-icon>error</mat-icon>
+    </div>
+
+    <h3>{{ errorPopupTitle }}</h3>
+    <p>{{ errorPopupMessage }}</p>
+
+    <div class="confirm-actions">
+      <button class="btn-primary" (click)="closeErrorPopup()">Entendido</button>
     </div>
   </div>
 </div>

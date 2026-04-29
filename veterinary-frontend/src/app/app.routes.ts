@@ -85,6 +85,13 @@ export const routes: Routes = [
             .then(m => m.CitasComponent)
       },
       {
+        path: 'veterinario/historial',
+        canActivate: [roleGuard(['VETERINARY'])],
+        loadComponent: () =>
+          import('./page/modules/historial-medico/medical-case.component')
+            .then(m => m.MedicalCaseComponent)
+      },
+      {
         path: 'cliente',
         canActivate: [roleGuard(['CLIENT'])],
         loadComponent: () =>
@@ -99,6 +106,13 @@ export const routes: Routes = [
             .then(m => m.CitasComponent)
       },
       {
+        path: 'cliente/historial',
+        canActivate: [roleGuard(['CLIENT'])],
+        loadComponent: () =>
+          import('./page/modules/historial-medico/medical-case.component')
+            .then(m => m.MedicalCaseComponent)
+      },
+      {
         path: 'cliente/mascotas',
         canActivate: [roleGuard(['CLIENT'])],
         loadComponent: () =>
@@ -107,7 +121,7 @@ export const routes: Routes = [
       },
       {
         path: 'medical-case/:id/:type',
-        canActivate: [roleGuard(['ADMIN', 'VETERINARY'])],
+        canActivate: [roleGuard(['ADMIN', 'VETERINARY', 'CLIENT'])],
         loadComponent: () =>
           import('./page/modules/historial-medico/medical-events/medical-events.component')
             .then(m => m.MedicalEventsComponent)

@@ -2,11 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse, RegisterUserPayload, User } from './models/user.model';
+import { API_BASE_URL } from './api.config';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
 
-  private API = 'http://localhost:8090/auth-service/auth';
+  private API = `${API_BASE_URL}/auth-service/auth`;
 
   constructor(private http: HttpClient) {}
 

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { interval, Subscription } from 'rxjs';
 import { AppointmentService, Appointment } from '../../../service/appointment.service';
 import { DynamicTableComponent, TableColumn, TableAction } from '../../../componets/dynamic-table/dynamic-table.component';
 import { MatIcon } from '@angular/material/icon';
@@ -17,6 +18,7 @@ import {
   booleanBadge,
   formatDateTime
 } from '../../../utils/table-display.util';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   standalone: true,
@@ -25,14 +27,17 @@ import {
   templateUrl: './citas.component.html',
   styleUrls: ['./citas.component.css']
 })
-export class CitasComponent implements OnInit {
+export class CitasComponent implements OnInit, OnDestroy {
 
   constructor(
     private appointmentService: AppointmentService,
     private petService: PetService,
     private clientService: ClientService,
-    private vetService: VetService
+    private vetService: VetService,
+    private authService: AuthService
   ) { }
+
+  readonly role = this.authService.getRole();
 
   columns: TableColumn[] = [
     { key: 'id', label: 'ID' },
@@ -44,41 +49,24 @@ export class CitasComponent implements OnInit {
     { key: 'enabledDisplay', label: 'Activo' }
   ];
 
-  actions: TableAction[] = [
-    {
-      name: 'status',
-      icon: 'sync',
-      color: '#dbeafe',
-      iconColor: '#2563eb'
-    },
-    {
-      name: 'reschedule',
-      icon: 'event',
-      color: '#fef3c7',
-      iconColor: '#d97706'
-    },
-    {
-      name: 'toggle',
-      icon: 'toggle_on',
-      color: '#fee2e2',
-      iconColor: '#dc2626'
-    }
-  ];
-
-  filters = [
-    { key: 'petId', label: 'Mascota', placeholder: 'Pet ID' },
-    { key: 'veterinarianId', label: 'Veterinario', placeholder: 'Vet ID' },
-    { key: 'status', label: 'Estado', placeholder: 'Estado' }
-  ];
-
   appointments: Appointment[] = [];
   selectedAppointment: any = null;
   createError = '';
+  rescheduleError = '';
+  statusError = '';
+  showErrorPopup = false;
+  errorPopupTitle = 'No se pudo completar la accion';
+  errorPopupMessage = '';
 
   showStatusModal = false;
   showRescheduleModal = false;
   showConfirmModal = false;
   showCreateModal = false;
+  showStartPrompt = false;
+
+  dueAppointment: any = null;
+  private duePromptDismissedForId: number | null = null;
+  private dueCheckSubscription?: Subscription;
 
   newAppointment: any = {
     petId: null,
@@ -108,29 +96,117 @@ export class CitasComponent implements OnInit {
   total = 0;
   currentFilters: any = {};
 
+  readonly baseFilters = [
+    { key: 'petId', label: 'Mascota', placeholder: 'Pet ID' },
+    { key: 'status', label: 'Estado', placeholder: 'PENDING, IN_PROGRESS...' },
+    { key: 'date', label: 'Dia', placeholder: 'YYYY-MM-DD' }
+  ];
+
+  readonly adminFilters = [
+    ...this.baseFilters,
+    { key: 'veterinarianId', label: 'Veterinario', placeholder: 'Vet ID' }
+  ];
+
   ngOnInit(): void {
     this.loadAppointments();
+
+    if (this.role === 'VETERINARY') {
+      this.dueCheckSubscription = interval(30000)
+        .subscribe(() => this.checkDueAppointments());
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.dueCheckSubscription?.unsubscribe();
+  }
+
+  get actions(): TableAction[] {
+    const canManageState = this.role === 'ADMIN' || this.role === 'VETERINARY';
+    const canToggle = this.role === 'ADMIN';
+
+    return [
+      {
+        name: 'status',
+        icon: 'sync',
+        color: '#dbeafe',
+        iconColor: '#2563eb',
+        visible: canManageState,
+        disabled: (row) => this.isPaidAppointment(row)
+      },
+      {
+        name: 'reschedule',
+        icon: 'event',
+        color: '#fef3c7',
+        iconColor: '#d97706',
+        visible: true,
+        disabled: (row) => !this.isPendingAppointment(row)
+      },
+      {
+        name: 'toggle',
+        icon: 'toggle_on',
+        color: '#fee2e2',
+        iconColor: '#dc2626',
+        visible: canToggle,
+        disabled: (row) => !this.isPendingAppointment(row)
+      }
+    ];
+  }
+
+  get filters() {
+    return this.role === 'ADMIN' ? this.adminFilters : this.baseFilters;
+  }
+
+  get canShowActions(): boolean {
+    return this.actions.some(action => action.visible !== false);
+  }
+
+  get statusOptions(): string[] {
+    const currentStatus = (this.selectedAppointment?.status ?? '').toUpperCase();
+
+    switch (currentStatus) {
+      case 'PENDING':
+      case 'RESCHEDULED':
+        return ['IN_PROGRESS', 'CANCELLED'];
+      case 'IN_PROGRESS':
+        return ['ATTENDED', 'RESCHEDULED', 'CANCELLED'];
+      case 'ATTENDED':
+        return ['PAID'];
+      default:
+        return [];
+    }
   }
 
   loadAppointments(filters?: any) {
     this.currentFilters = filters ?? this.currentFilters;
+
     this.appointmentService
       .getAppointments(
-        this.currentFilters?.petId,
-        this.currentFilters?.veterinarianId,
-        this.currentFilters?.status,
-        undefined,
+        this.toNumber(this.currentFilters?.petId),
+        this.role === 'ADMIN' ? this.toNumber(this.currentFilters?.veterinarianId) : undefined,
+        this.currentFilters?.status?.trim() || undefined,
+        this.parseDateFilter(this.currentFilters?.date),
         this.page,
         this.size
       )
-      .subscribe(res => {
-        this.appointments = res.data.map(appointment => ({
-          ...appointment,
-          appointmentDateDisplay: formatDateTime(appointment.appointmentDate),
-          statusDisplay: appointmentStatusBadge(appointment.status),
-          enabledDisplay: booleanBadge(!!appointment.enabled)
-        }));
-        this.total = res.total;
+      .subscribe({
+        next: (res) => {
+          this.appointments = res.data.map(appointment => ({
+            ...appointment,
+            appointmentDateDisplay: formatDateTime(appointment.appointmentDate),
+            statusDisplay: appointmentStatusBadge(appointment.status),
+            enabledDisplay: booleanBadge(!!appointment.enabled)
+          }));
+          this.total = res.total;
+
+          if (this.role === 'VETERINARY') {
+            this.checkDueAppointments();
+          }
+        },
+        error: (error) => {
+          this.appointments = [];
+          this.total = 0;
+          this.openErrorPopup('No se pudo cargar citas', this.getErrorMessage(error, 'No se pudo cargar el modulo de citas.'));
+        }
       });
   }
 
@@ -146,20 +222,23 @@ export class CitasComponent implements OnInit {
   }
 
   handleAction(event: { action: string, row: any }) {
+    if (event.action === 'status' && this.isPaidAppointment(event.row)) {
+      return;
+    }
+
+    if (['reschedule', 'toggle'].includes(event.action) && !this.isPendingAppointment(event.row)) {
+      return;
+    }
+
     if (event.action === 'status') {
       this.selectedAppointment = event.row;
-      this.selectedStatus = event.row.status;
+      this.selectedStatus = this.statusOptions[0] ?? '';
+      this.statusError = '';
       this.showStatusModal = true;
     }
 
     if (event.action === 'reschedule') {
-      this.selectedAppointment = event.row;
-      this.newRescheduleDate = '';
-      this.newRescheduleVetId = undefined;
-      this.selectedRescheduleVetLabel = '';
-      this.rescheduleVetOptions = [];
-      this.searchRescheduleVets('');
-      this.showRescheduleModal = true;
+      this.openRescheduleModal(event.row);
     }
 
     if (event.action === 'toggle') {
@@ -195,7 +274,7 @@ export class CitasComponent implements OnInit {
 
     const payload = {
       ...this.newAppointment,
-      appointmentDate: new Date(this.newAppointment.appointmentDate).toISOString(),
+      appointmentDate: this.toLocalDateTimeForApi(this.newAppointment.appointmentDate),
       reason: this.newAppointment.reason.trim()
     };
 
@@ -206,59 +285,60 @@ export class CitasComponent implements OnInit {
           this.loadAppointments();
         },
         error: (error) => {
-          this.createError = error?.error?.message ?? 'No se pudo crear la cita.';
-          console.error(error);
+          const message = this.getErrorMessage(error, 'No se pudo crear la cita.');
+          this.openErrorPopup('No se pudo crear la cita', message);
+          this.createError = message;
+        }
+      });
+  }
+
+  updateStatus() {
+    if (!this.selectedStatus) {
+      this.statusError = 'Selecciona un estado valido para continuar.';
+      return;
+    }
+
+    this.appointmentService
+      .updateStatus(this.selectedAppointment.id, this.selectedStatus)
+      .subscribe({
+        next: () => {
+          this.closeModals();
+          this.loadAppointments();
+        },
+        error: (error) => {
+          const message = this.getErrorMessage(error, 'No se pudo actualizar el estado.');
+          this.statusError = message;
+          this.openErrorPopup('No se pudo actualizar el estado', message);
         }
       });
   }
 
   confirmReschedule() {
     if (!this.newRescheduleDate) {
+      this.rescheduleError = 'Selecciona una nueva fecha antes de reprogramar.';
       return;
     }
 
-    const isoDate = new Date(this.newRescheduleDate).toISOString();
+    this.rescheduleError = '';
+
+    const appointmentDate = this.toLocalDateTimeForApi(this.newRescheduleDate);
 
     this.appointmentService
       .reschedule(
         this.selectedAppointment.id,
-        isoDate,
+        appointmentDate,
         this.newRescheduleVetId
       )
-      .subscribe(() => {
-        this.closeModals();
-        this.loadAppointments();
-      });
-  }
-
-  closeModals() {
-    this.showStatusModal = false;
-    this.showRescheduleModal = false;
-    this.showConfirmModal = false;
-    this.showCreateModal = false;
-    this.selectedAppointment = null;
-    this.createError = '';
-    this.selectedPetLabel = '';
-    this.selectedClientLabel = '';
-    this.selectedVetLabel = '';
-    this.selectedRescheduleVetLabel = '';
-  }
-
-  updateStatus() {
-    this.appointmentService
-      .updateStatus(this.selectedAppointment.id, this.selectedStatus)
-      .subscribe(() => {
-        this.closeModals();
-        this.loadAppointments();
-      });
-  }
-
-  reschedule(newDate: string, newVetId?: number) {
-    this.appointmentService
-      .reschedule(this.selectedAppointment.id, newDate, newVetId)
-      .subscribe(() => {
-        this.closeModals();
-        this.loadAppointments();
+      .subscribe({
+        next: () => {
+          this.closeModals();
+          this.loadAppointments();
+        },
+        error: (error) => {
+          const message = this.getErrorMessage(error, 'No se pudo reprogramar la cita.');
+          this.rescheduleError = message;
+          this.openErrorPopup('No se pudo reprogramar la cita', message);
+        }
       });
   }
 
@@ -269,6 +349,76 @@ export class CitasComponent implements OnInit {
         this.closeModals();
         this.loadAppointments();
       });
+  }
+
+  openCustomRescheduleFromPrompt() {
+    if (!this.dueAppointment) {
+      return;
+    }
+
+    this.showStartPrompt = false;
+    this.openRescheduleModal(this.dueAppointment);
+  }
+
+  snoozeDueAppointment() {
+    if (!this.dueAppointment) {
+      return;
+    }
+
+    const baseDate = new Date(this.dueAppointment.appointmentDate);
+    baseDate.setMinutes(baseDate.getMinutes() + 5);
+
+    this.appointmentService.reschedule(this.dueAppointment.id, this.formatLocalDateTime(baseDate))
+      .subscribe({
+        next: () => {
+          this.duePromptDismissedForId = null;
+          this.showStartPrompt = false;
+          this.dueAppointment = null;
+          this.loadAppointments();
+        },
+        error: (error) => {
+          const message = this.getErrorMessage(error, 'No se pudo mover la cita 5 minutos.');
+          this.openErrorPopup('No se pudo reprogramar la cita', message);
+        }
+      });
+  }
+
+  startDueAppointment() {
+    if (!this.dueAppointment) {
+      return;
+    }
+
+    this.appointmentService.updateStatus(this.dueAppointment.id, 'IN_PROGRESS')
+      .subscribe({
+        next: () => {
+          this.showStartPrompt = false;
+          this.dueAppointment = null;
+          this.loadAppointments();
+        },
+        error: (error) => {
+          this.openErrorPopup('No se pudo iniciar la cita', this.getErrorMessage(error, 'No se pudo iniciar la cita.'));
+        }
+      });
+  }
+
+  closeStartPrompt() {
+    this.duePromptDismissedForId = this.dueAppointment?.id ?? null;
+    this.showStartPrompt = false;
+  }
+
+  closeModals() {
+    this.showStatusModal = false;
+    this.showRescheduleModal = false;
+    this.showConfirmModal = false;
+    this.showCreateModal = false;
+    this.selectedAppointment = null;
+    this.createError = '';
+    this.rescheduleError = '';
+    this.statusError = '';
+    this.selectedPetLabel = '';
+    this.selectedClientLabel = '';
+    this.selectedVetLabel = '';
+    this.selectedRescheduleVetLabel = '';
   }
 
   searchPets(term: string) {
@@ -299,6 +449,11 @@ export class CitasComponent implements OnInit {
     this.newAppointment.clientId = pet?.ownerId ?? null;
     this.selectedPetLabel = option.label;
     this.createError = '';
+
+    if (this.role === 'CLIENT') {
+      this.selectedClientLabel = 'Mi cuenta';
+      return;
+    }
 
     if (pet?.ownerId) {
       this.loadClientLabel(pet.ownerId);
@@ -368,6 +523,45 @@ export class CitasComponent implements OnInit {
     this.selectedRescheduleVetLabel = '';
   }
 
+  closeErrorPopup() {
+    this.showErrorPopup = false;
+    this.errorPopupMessage = '';
+  }
+
+  private openRescheduleModal(appointment: any) {
+    this.selectedAppointment = appointment;
+    this.newRescheduleDate = '';
+    this.newRescheduleVetId = undefined;
+    this.selectedRescheduleVetLabel = '';
+    this.rescheduleError = '';
+    this.rescheduleVetOptions = [];
+    this.searchRescheduleVets('');
+    this.showRescheduleModal = true;
+  }
+
+  private checkDueAppointments() {
+    if (this.role !== 'VETERINARY' || this.showStartPrompt || this.showRescheduleModal || this.showStatusModal) {
+      return;
+    }
+
+    const now = new Date();
+    const due = this.appointments
+      .filter(appointment => appointment.enabled && ['PENDING', 'RESCHEDULED'].includes(appointment.status))
+      .find(appointment => {
+        const appointmentDate = new Date(appointment.appointmentDate);
+        return appointmentDate.getTime() <= now.getTime()
+          && appointment.id !== this.duePromptDismissedForId;
+      });
+
+    if (due) {
+      this.dueAppointment = {
+        ...due,
+        appointmentDateDisplay: formatDateTime(due.appointmentDate)
+      };
+      this.showStartPrompt = true;
+    }
+  }
+
   private loadClientLabel(clientId: number) {
     this.clientService.getById(clientId)
       .subscribe({
@@ -391,5 +585,64 @@ export class CitasComponent implements OnInit {
 
   private formatClientLabel(client: Client): string {
     return `${client.firstName} ${client.lastName}`.trim() || client.email;
+  }
+
+  private openErrorPopup(title: string, message: string) {
+    this.errorPopupTitle = title;
+    this.errorPopupMessage = message;
+    this.showErrorPopup = true;
+  }
+
+  private getErrorMessage(error: any, fallback: string): string {
+    const payloadMessage = error?.error?.message;
+    if (typeof payloadMessage === 'string' && payloadMessage.trim()) {
+      return payloadMessage;
+    }
+
+    if (typeof error?.message === 'string' && error.message.trim()) {
+      return error.message;
+    }
+
+    return fallback;
+  }
+
+  private toNumber(value: unknown): number | undefined {
+    if (value === null || value === undefined || value === '') {
+      return undefined;
+    }
+
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? undefined : parsed;
+  }
+
+  private parseDateFilter(value: unknown): string | undefined {
+    if (typeof value !== 'string' || !value.trim()) {
+      return undefined;
+    }
+
+    const date = value.trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(date) ? `${date}T00:00:00` : undefined;
+  }
+
+  private toLocalDateTimeForApi(value: string): string {
+    return value.length === 16 ? `${value}:00` : value;
+  }
+
+  private isPendingAppointment(appointment: any): boolean {
+    return (appointment?.status ?? '').toUpperCase() === 'PENDING';
+  }
+
+  private isPaidAppointment(appointment: any): boolean {
+    return (appointment?.status ?? '').toUpperCase() === 'PAID';
+  }
+
+  private formatLocalDateTime(date: Date): string {
+    const pad = (part: number) => part.toString().padStart(2, '0');
+
+    return [
+      date.getFullYear(),
+      pad(date.getMonth() + 1),
+      pad(date.getDate())
+    ].join('-') + `T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
 }

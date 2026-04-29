@@ -67,8 +67,9 @@
             <button
               *ngIf="action.visible !== false"
               class="action-btn"
+              [disabled]="isActionDisabled(action, row)"
               [ngStyle]="{'background-color': action.color || '#f3f4f6'}"
-              (click)="onAction(action.name, row)">
+              (click)="onAction(action, row)">
               <mat-icon [ngStyle]="{'color': action.iconColor || '#111'}">
                 {{ action.icon }}
               </mat-icon>

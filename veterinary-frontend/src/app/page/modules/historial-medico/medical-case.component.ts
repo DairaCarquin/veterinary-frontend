@@ -5,6 +5,7 @@ import { MedicalCase, MedicalHistoryService } from '../../../service/medical-his
 import { MatIcon } from '@angular/material/icon';
 import { DynamicTableComponent, TableAction, TableColumn } from '../../../componets/dynamic-table/dynamic-table.component';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   standalone: true,
@@ -15,13 +16,15 @@ import { Router } from '@angular/router';
     DynamicTableComponent,
     MatIcon
   ],
-  templateUrl: './medical-case.component.html'
+  templateUrl: './medical-case.component.html',
+  styleUrls: ['./medical-case.component.css']
 })
 export class MedicalCaseComponent implements OnInit {
 
   constructor(
     private medicalService: MedicalHistoryService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) { }
 
   columns: TableColumn[] = [
@@ -45,6 +48,7 @@ export class MedicalCaseComponent implements OnInit {
   size = 10;
   total = 0;
   currentFilters: any = {};
+  readonly role = this.authService.getRole();
 
   filters = [
     { key: 'appointmentId', label: 'Cita', placeholder: 'Buscar por cita' },
@@ -81,5 +85,29 @@ export class MedicalCaseComponent implements OnInit {
       event.row.id,
       event.action
     ]);
+  }
+
+  get pageTitle(): string {
+    if (this.role === 'CLIENT') {
+      return 'Historial Medico de Mis Mascotas';
+    }
+
+    if (this.role === 'VETERINARY') {
+      return 'Historial Medico de Mis Pacientes';
+    }
+
+    return 'Gestion de Historial Medico';
+  }
+
+  get pageSubtitle(): string {
+    if (this.role === 'CLIENT') {
+      return 'Consulta casos clinicos, diagnosticos, analisis y tratamientos de tus mascotas.';
+    }
+
+    if (this.role === 'VETERINARY') {
+      return 'Revisa casos clinicos asignados y entra al detalle medico de cada paciente.';
+    }
+
+    return 'Revisa los casos clinicos con el mismo estilo usado en el resto de la administracion.';
   }
 }

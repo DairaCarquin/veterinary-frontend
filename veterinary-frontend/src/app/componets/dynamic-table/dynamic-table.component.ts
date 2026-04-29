@@ -14,6 +14,7 @@ export interface TableAction {
   color?: string;
   iconColor?: string;
   visible?: boolean;
+  disabled?: boolean | ((row: any) => boolean);
 }
 
 export interface TableFilter {
@@ -55,8 +56,12 @@ export class DynamicTableComponent {
 
   filterValues: any = {};
 
-  onAction(action: string, row: any) {
-    this.actionClick.emit({ action, row });
+  onAction(action: TableAction, row: any) {
+    if (this.isActionDisabled(action, row)) {
+      return;
+    }
+
+    this.actionClick.emit({ action: action.name, row });
   }
 
   applyFilters() {
@@ -115,5 +120,11 @@ export class DynamicTableComponent {
       && typeof value === 'object'
       && 'label' in value
       && 'tone' in value;
+  }
+
+  isActionDisabled(action: TableAction, row: any): boolean {
+    return typeof action.disabled === 'function'
+      ? action.disabled(row)
+      : !!action.disabled;
   }
 }

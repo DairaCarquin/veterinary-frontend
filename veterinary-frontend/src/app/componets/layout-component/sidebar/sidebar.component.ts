@@ -30,10 +30,12 @@ export class SidebarComponent {
 
     { label: 'Dashboard', route: '/veterinario', icon: 'dashboard', roles: ['VETERINARY'] },
     { label: 'Mi agenda', route: '/veterinario/citas', icon: 'calendar_month', roles: ['VETERINARY'] },
+    { label: 'Historial médico', route: '/veterinario/historial', icon: 'description', roles: ['VETERINARY'] },
 
     { label: 'Dashboard', route: '/cliente', icon: 'dashboard', roles: ['CLIENT'] },
     { label: 'Mis mascotas', route: '/cliente/mascotas', icon: 'pets', roles: ['CLIENT'] },
     { label: 'Mis citas', route: '/cliente/citas', icon: 'event_note', roles: ['CLIENT'] },
+    { label: 'Historial médico', route: '/cliente/historial', icon: 'description', roles: ['CLIENT'] },
   ];
 
   get filteredMenu() {

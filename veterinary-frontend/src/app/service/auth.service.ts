@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { API_BASE_URL } from './api.config';
 
 export type UserRole = 'ADMIN' | 'CLIENT' | 'VETERINARY';
 
@@ -20,7 +21,7 @@ export interface LoginResponse {
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly API = 'http://localhost:8090/auth-service/auth/login';
+  private readonly API = `${API_BASE_URL}/auth-service/auth/login`;
 
   private readonly STORAGE_ACCESS = 'accessToken';
   private readonly STORAGE_REFRESH = 'refreshToken';

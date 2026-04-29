@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from './api.config';
 
 export interface Veterinarian {
   id: number;
@@ -27,7 +28,7 @@ export interface ApiResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class VetService {
 
-  private API = 'http://localhost:8090/vet-service/vets';
+  private API = `${API_BASE_URL}/vet-service/vets`;
 
   constructor(private http: HttpClient) { }
 

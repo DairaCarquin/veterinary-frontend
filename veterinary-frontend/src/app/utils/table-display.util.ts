@@ -18,6 +18,8 @@ export function appointmentStatusBadge(status: string | null | undefined): Table
       return { label: 'Pendiente', tone: 'warning' };
     case 'RESCHEDULED':
       return { label: 'Reprogramada', tone: 'info' };
+    case 'IN_PROGRESS':
+      return { label: 'En curso', tone: 'info' };
     case 'ATTENDED':
       return { label: 'Atendida', tone: 'success' };
     case 'PAID':

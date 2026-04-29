@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
 import { DynamicTableComponent, TableAction, TableColumn } from '../../../../componets/dynamic-table/dynamic-table.component';
 import { MedicalHistoryService } from '../../../../service/medical-history.service';
+import { AuthService } from '../../../../service/auth.service';
 
 @Component({
   standalone: true,
@@ -17,7 +18,8 @@ export class MedicalEventsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private service: MedicalHistoryService
+    private service: MedicalHistoryService,
+    private authService: AuthService
   ) { }
 
   caseId!: number;
@@ -31,6 +33,11 @@ export class MedicalEventsComponent implements OnInit {
   showCreateModal = false;
   showEditModal = false;
   selectedItem: any = null;
+  formError = '';
+  showErrorPopup = false;
+  errorPopupTitle = 'No se pudo guardar';
+  errorPopupMessage = '';
+  readonly role = this.authService.getRole();
 
   columns: TableColumn[] = [];
   actions: TableAction[] = [
@@ -124,12 +131,14 @@ export class MedicalEventsComponent implements OnInit {
   handleAction(event: any) {
     if (event.action === 'edit') {
       this.selectedItem = { ...event.row };
+      this.formError = '';
       this.showEditModal = true;
     }
   }
 
   openCreateModal() {
     this.selectedItem = { medicalCaseId: this.caseId };
+    this.formError = '';
     this.showCreateModal = true;
   }
 
@@ -137,9 +146,14 @@ export class MedicalEventsComponent implements OnInit {
     this.showCreateModal = false;
     this.showEditModal = false;
     this.selectedItem = null;
+    this.formError = '';
   }
 
   save() {
+    if (!this.validateForm()) {
+      return;
+    }
+
     const createMap: any = {
       analysis: this.service.createAnalysis.bind(this.service),
       diagnosis: this.service.createDiagnosis.bind(this.service),
@@ -156,10 +170,26 @@ export class MedicalEventsComponent implements OnInit {
 
     if (this.selectedItem.id) {
       updateMap[this.type](this.selectedItem.id, this.selectedItem)
-        .subscribe(() => { this.closeModals(); this.loadData(); });
+        .subscribe({
+          next: () => {
+            this.closeModals();
+            this.loadData();
+          },
+          error: (error: any) => {
+            this.openErrorPopup('No se pudo actualizar', this.getErrorMessage(error, 'No se pudo actualizar el registro medico.'));
+          }
+        });
     } else {
       createMap[this.type](this.selectedItem)
-        .subscribe(() => { this.closeModals(); this.loadData(); });
+        .subscribe({
+          next: () => {
+            this.closeModals();
+            this.loadData();
+          },
+          error: (error: any) => {
+            this.openErrorPopup('No se pudo crear', this.getErrorMessage(error, 'No se pudo crear el registro medico.'));
+          }
+        });
     }
   }
 
@@ -173,6 +203,10 @@ export class MedicalEventsComponent implements OnInit {
 
   get visibleColumns(): TableColumn[] {
     return this.columns.filter(col => col.key !== 'id' && col.key !== 'createdAt');
+  }
+
+  get canEdit(): boolean {
+    return this.role === 'ADMIN' || this.role === 'VETERINARY';
   }
 
   getModalTitle(): string {
@@ -192,5 +226,57 @@ export class MedicalEventsComponent implements OnInit {
     };
 
     return placeholders[key] ?? 'Completa este campo';
+  }
+
+  hasFieldError(key: string): boolean {
+    return this.formError.includes(key);
+  }
+
+  getFieldError(key: string): string {
+    const errors: Record<string, string> = {
+      description: 'La descripcion es obligatoria.',
+      result: 'El resultado es obligatorio.',
+      diagnosis: 'El diagnostico es obligatorio.',
+      observations: 'Las observaciones son obligatorias.',
+      referredTo: 'El destino del referido es obligatorio.',
+      reason: 'El motivo es obligatorio.',
+      treatment: 'El tratamiento es obligatorio.',
+      indications: 'Las indicaciones son obligatorias.'
+    };
+
+    return errors[key] ?? 'Este campo es obligatorio.';
+  }
+
+  closeErrorPopup() {
+    this.showErrorPopup = false;
+    this.errorPopupMessage = '';
+  }
+
+  private validateForm(): boolean {
+    const invalidKeys = this.visibleColumns
+      .filter(col => !String(this.selectedItem?.[col.key] ?? '').trim())
+      .map(col => col.key);
+
+    this.formError = invalidKeys.join(',');
+    return invalidKeys.length === 0;
+  }
+
+  private openErrorPopup(title: string, message: string) {
+    this.errorPopupTitle = title;
+    this.errorPopupMessage = message;
+    this.showErrorPopup = true;
+  }
+
+  private getErrorMessage(error: any, fallback: string): string {
+    const payloadMessage = error?.error?.message;
+    if (typeof payloadMessage === 'string' && payloadMessage.trim()) {
+      return payloadMessage;
+    }
+
+    if (typeof error?.message === 'string' && error.message.trim()) {
+      return error.message;
+    }
+
+    return fallback;
   }
 }

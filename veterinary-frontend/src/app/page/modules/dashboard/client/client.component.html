@@ -1,8 +1,14 @@
 <section class="role-dashboard">
-  <header class="hero client-hero">
+  <header class="hero">
     <div>
-      <h2>Panel del cliente</h2>
-      <p>Consulta tus mascotas, revisa tus próximas citas y mantén todo en orden.</p>
+      <div class="eyebrow">Agenda del cliente</div>
+      <h2>Citas e historial de mis mascotas</h2>
+      <p>Visualiza en calendario todas las citas pasadas, actuales y futuras de tus mascotas y entra directo a su historial medico.</p>
+    </div>
+
+    <div class="hero-actions">
+      <a routerLink="/cliente/citas" class="hero-btn primary">Gestionar mis citas</a>
+      <a routerLink="/cliente/historial" class="hero-btn secondary">Abrir historial medico</a>
     </div>
   </header>
 
@@ -12,33 +18,123 @@
       <strong>{{ pets.length }}</strong>
     </article>
     <article class="info-card">
-      <span>Próximas citas</span>
+      <span>Total de citas</span>
       <strong>{{ appointments.length }}</strong>
+    </article>
+    <article class="info-card">
+      <span>Casos medicos</span>
+      <strong>{{ medicalCases.length }}</strong>
     </article>
   </div>
 
   <div class="content-grid">
+    <section class="panel calendar-panel">
+      <div class="panel-header">
+        <div>
+          <h3>Calendario de citas</h3>
+          <p *ngIf="loading">Cargando agenda...</p>
+        </div>
+
+        <div class="month-switcher">
+          <button (click)="previousMonth()"><mat-icon>chevron_left</mat-icon></button>
+          <strong>{{ monthLabel }}</strong>
+          <button (click)="nextMonth()"><mat-icon>chevron_right</mat-icon></button>
+        </div>
+      </div>
+
+      <div class="weekday-row">
+        <span>Dom</span>
+        <span>Lun</span>
+        <span>Mar</span>
+        <span>Mie</span>
+        <span>Jue</span>
+        <span>Vie</span>
+        <span>Sab</span>
+      </div>
+
+      <div class="calendar-grid">
+        <button
+          *ngFor="let day of calendarDays"
+          class="calendar-cell"
+          [class.other-month]="!day.inCurrentMonth"
+          [class.today]="day.isToday"
+          [class.selected]="day.isSelected"
+          (click)="selectDay(day.iso)">
+          <span class="day-number">{{ day.date.getDate() }}</span>
+          <small>{{ day.totalAppointments }} citas</small>
+        </button>
+      </div>
+    </section>
+
     <section class="panel">
-      <h3>Mis mascotas</h3>
-      <div *ngIf="!pets.length" class="empty-state">Aún no tienes mascotas registradas.</div>
+      <div class="panel-header">
+        <div>
+          <h3>Agenda del dia</h3>
+          <p>{{ selectedDateIso }}</p>
+        </div>
+      </div>
+
+      <div class="filter-grid">
+        <div class="filter-field">
+          <label>Mascota</label>
+          <input [(ngModel)]="filters.petId" placeholder="Filtrar por ID de mascota" />
+        </div>
+        <div class="filter-field">
+          <label>Hora</label>
+          <input [(ngModel)]="filters.hour" placeholder="08:30" />
+        </div>
+      </div>
+
+      <div *ngIf="!selectedDayAppointments.length" class="empty-state">
+        No hay citas para ese dia con los filtros aplicados.
+      </div>
+
+      <div class="appointment-list">
+        <article class="appointment-card" *ngFor="let appointment of selectedDayAppointments">
+          <div class="appointment-top">
+            <strong>Cita #{{ appointment.id }}</strong>
+            <span class="status-chip">{{ appointment.status }}</span>
+          </div>
+          <p>Mascota #{{ appointment.petId }} | Veterinario #{{ appointment.veterinarianId }}</p>
+          <small>{{ appointment.appointmentDate | date:'medium' }}</small>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <div class="content-grid">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h3>Mis mascotas</h3>
+          <p>Acceso rapido a las mascotas registradas en tu cuenta.</p>
+        </div>
+        <a routerLink="/cliente/mascotas" class="text-link">Ver modulo</a>
+      </div>
+
       <div class="pet-list">
         <article class="pet-card" *ngFor="let pet of pets | slice:0:6">
           <strong>{{ pet.name }}</strong>
           <p>{{ pet.species }} | {{ pet.breed }}</p>
-          <small>Edad: {{ pet.age }} años</small>
+          <small>Edad: {{ pet.age }} anios</small>
         </article>
       </div>
     </section>
 
     <section class="panel">
-      <h3>Mis citas</h3>
-      <div *ngIf="loading" class="empty-state">Cargando citas...</div>
-      <div *ngIf="!appointments.length && !loading" class="empty-state">No tienes citas programadas.</div>
-      <div class="appointment-list">
-        <article class="appointment-card" *ngFor="let appointment of appointments | slice:0:6">
-          <strong>Cita #{{ appointment.id }}</strong>
-          <p>Veterinario: {{ appointment.veterinarianId }}</p>
-          <small>{{ appointment.appointmentDate | date:'medium' }}</small>
+      <div class="panel-header">
+        <div>
+          <h3>Historial medico reciente</h3>
+          <p>Ultimos casos medicos disponibles para tus mascotas.</p>
+        </div>
+        <a routerLink="/cliente/historial" class="text-link">Ver modulo</a>
+      </div>
+
+      <div class="history-grid">
+        <article class="history-card" *ngFor="let item of medicalCases">
+          <strong>Caso #{{ item.id }}</strong>
+          <p>Mascota #{{ item.petId }} | Cita #{{ item.appointmentId }}</p>
+          <small>{{ item.createdAt | date:'medium' }}</small>
         </article>
       </div>
     </section>

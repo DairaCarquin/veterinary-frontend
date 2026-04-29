@@ -20,6 +20,7 @@ import {
   hasWhitespace,
   isValidName
 } from '../../../utils/form-validation.util';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   standalone: true,
@@ -32,7 +33,8 @@ export class MascotasComponent implements OnInit {
 
   constructor(
     private petService: PetService,
-    private clientService: ClientService
+    private clientService: ClientService,
+    private authService: AuthService
   ) {}
 
   columns: TableColumn[] = [
@@ -87,6 +89,7 @@ export class MascotasComponent implements OnInit {
   total = 0;
   currentFilters: any = {};
   private ownerNameCache = new Map<number, string>();
+  private readonly role = this.authService.getRole();
 
   ngOnInit(): void {
     this.loadPets();
@@ -98,6 +101,12 @@ export class MascotasComponent implements OnInit {
       .getPets(this.currentFilters?.name, this.currentFilters?.species, this.currentFilters?.ownerId, this.page, this.size)
       .subscribe(res => {
         const pets = res.data || [];
+        if (this.role === 'CLIENT') {
+          this.pets = this.mapPetsWithOwner(pets);
+          this.total = res.total;
+          return;
+        }
+
         const ownerIds = [...new Set(pets.map(pet => pet.ownerId).filter((ownerId): ownerId is number => !!ownerId))];
         const missingOwnerIds = ownerIds.filter(ownerId => !this.ownerNameCache.has(ownerId));
 
@@ -351,7 +360,9 @@ export class MascotasComponent implements OnInit {
   private mapPetsWithOwner(pets: Pet[]): Pet[] {
     return pets.map(pet => ({
       ...pet,
-      ownerDisplay: `${pet.ownerId} - ${this.ownerNameCache.get(pet.ownerId) ?? `Cliente ${pet.ownerId}`}`,
+      ownerDisplay: this.role === 'CLIENT'
+        ? 'Mi cuenta'
+        : `${pet.ownerId} - ${this.ownerNameCache.get(pet.ownerId) ?? `Cliente ${pet.ownerId}`}`,
       enabledDisplay: booleanBadge(!!pet.enabled)
     }));
   }

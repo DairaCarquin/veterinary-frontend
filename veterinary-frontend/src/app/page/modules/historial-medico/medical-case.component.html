@@ -1,8 +1,50 @@
 <div class="header-container">
   <div>
-    <h2>Gestion de Historial Medico</h2>
-    <p class="section-subtitle">Revisa los casos clinicos con el mismo estilo usado en el resto de la administracion.</p>
+    <h2>{{ pageTitle }}</h2>
+    <p class="section-subtitle">{{ pageSubtitle }}</p>
   </div>
+</div>
+
+<div class="overview-grid">
+  <article class="overview-card analysis-card">
+    <div class="overview-icon">
+      <mat-icon>science</mat-icon>
+    </div>
+    <div>
+      <h3>Analisis</h3>
+      <p>Consulta y registra hallazgos clinicos con una vista clara y ordenada.</p>
+    </div>
+  </article>
+
+  <article class="overview-card diagnosis-card">
+    <div class="overview-icon">
+      <mat-icon>medical_services</mat-icon>
+    </div>
+    <div>
+      <h3>Diagnostico</h3>
+      <p>Documenta interpretaciones medicas y observaciones importantes del caso.</p>
+    </div>
+  </article>
+
+  <article class="overview-card referral-card">
+    <div class="overview-icon">
+      <mat-icon>send</mat-icon>
+    </div>
+    <div>
+      <h3>Referido</h3>
+      <p>Organiza derivaciones y motivos de traslado dentro del historial.</p>
+    </div>
+  </article>
+
+  <article class="overview-card treatment-card">
+    <div class="overview-icon">
+      <mat-icon>healing</mat-icon>
+    </div>
+    <div>
+      <h3>Tratamiento</h3>
+      <p>Haz seguimiento de planes terapeuticos, pautas e indicaciones del paciente.</p>
+    </div>
+  </article>
 </div>
 
 <app-dynamic-table
